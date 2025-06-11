@@ -22,7 +22,6 @@ Route::get('cart/payment', [CartController::class, 'cartPayment'])->name('cart.p
 Route::post('login-modal', [MainController::class, 'loginModal'])->name('loginModal');
 Route::post('order/generate', [OrderController::class, 'orderGenerate'])->name('order.generate');
 Route::post('billing/detail', [OrderController::class, 'billingDetail'])->name('billing.details');
-Route::post('payment-intent', [OrderController::class, 'PayWithCard'])->name('payment.intent');
 Route::get('shop', [MainController::class, 'allProducts'])->name('all.products');
 Route::post('/create-checkout-session', [StripeController::class, 'createCheckoutSession'])->name('stripe.checkout');
 Route::get('/payment/cancel', [StripeController::class, 'paymentCancel'])->name('stripe.cancel');
