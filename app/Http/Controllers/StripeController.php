@@ -107,7 +107,6 @@ class StripeController extends Controller
                 'order_id' => $randomOrderId,
                 'stripe_session_id' => $session->id,
                 'payment_intent_id' => $session->payment_intent,
-                'stripe_customer_id' => $session->customer,
                 'payment_status' => 'paid',
                 'status' => 'processing',
             ]);
