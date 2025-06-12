@@ -93,6 +93,22 @@ const dataTableColumns = [
         }
     },
     {
+    title: translations.value.payment_status || 'Payment Status',
+    data: 'payment_status',
+    render: (data: string) => `<span class="badge bg-success">${data || 'N/A'}</span>`,
+    },
+    {
+        title: translations.value.payment_method || 'Payment Method',
+        data: 'payment_method',
+        render: (data: string) => data || 'N/A',
+    },
+    {
+        title: translations.value.payment_intent_id || 'payment_intent_id',
+        data: 'payment_intent_id',
+        render: (data: string) => data || 'N/A',
+    },
+
+    {
         title: translations.value.customer_name || 'Customer Name',
         data: 'name'
     },
@@ -191,7 +207,7 @@ const updateStatus = () => {
                     <DataTable v-if="orders?.data" :data="orders.data" :columns="dataTableColumns" :options="options"
                         class="display">
                         <thead>
-                            <tr>
+                            <!-- <tr>
                                 <th>{{ translations.sr || 'Sr.' }}</th>
                                 <th>{{ translations.order_id || 'Order ID' }}</th>
                                 <th>{{ translations.status || 'Status' }}</th>
@@ -201,7 +217,7 @@ const updateStatus = () => {
                                 <th>{{ translations.total || 'Total' }}</th>
                                 <th>{{ translations.created_at || 'Created At' }}</th>
                                 <th>{{ translations.action || 'Action' }}</th>
-                            </tr>
+                            </tr> -->
                         </thead>
                         <tbody>
                             <!-- DataTables will populate this automatically -->

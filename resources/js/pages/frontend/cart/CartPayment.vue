@@ -9,6 +9,8 @@ import { Link } from "@inertiajs/vue3";
 import { useForm } from "@inertiajs/vue3";
 import { LoaderCircle } from "lucide-vue-next";
 import type { PageProps as InertiaPageProps } from "@inertiajs/core";
+import StripePayment from "@/components/frontend/StripePayment.vue";
+
 
 // Add interface for page props
 interface PageProps extends InertiaPageProps {
@@ -49,30 +51,6 @@ const orderGenerate = () => {
         },
     });
 };
-import { loadStripe } from '@stripe/stripe-js'
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_KEY)
-const handleStripeCheckout = async () => {
-    const stripe = await stripePromise
-
-    const response = await fetch('/create-checkout-session', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-        },
-    })
-
-    const data = await response.json()
-
-    const result = await stripe?.redirectToCheckout({
-        sessionId: data.id,
-    })
-
-    if (result?.error) {
-        alert(result.error.message)
-    }
-}
-
 </script>
 <template>
     <UserLayout>
@@ -140,15 +118,19 @@ const handleStripeCheckout = async () => {
                                     class="w-full btn-primary mt-5 flex items-center justify-center py-4"
                                     :disabled="form.processing">
                                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin mr-2" />
-                                    Save
+                                    Place Order
                                     <template #icon v-if="!form.processing">
                                         <ShoppingOutlined />
                                     </template>
 
                                 </a-button>
-                                <a-button type="primary" class="w-full mt-4" @click="handleStripeCheckout">
-                                    Pay with Card (Stripe)
-                                </a-button>
+                                  <!-- OR Separator -->
+                            <div class="flex items-center my-6">
+                                <div class="flex-grow h-px bg-gray-300"></div>
+                                <span class="mx-4 text-gray-600 font-medium">OR</span>
+                                <div class="flex-grow h-px bg-gray-300"></div>
+                            </div>
+                                <StripePayment />
                             </div>
                         </div>
                         </Col>

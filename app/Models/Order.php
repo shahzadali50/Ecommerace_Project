@@ -11,7 +11,7 @@ class Order extends Model
     protected $fillable = [
         'name', 'phone_number',
         'total_price', 'discount', 'subtotal_price', 'status', 'payment_method', 'user_id',
-        'email', 'address', 'city', 'state', 'postal_code', 'country', 'order_notes','order_id','payment_intent_id','stripe_session_id','payment_status'
+        'email', 'address', 'city', 'state', 'postal_code', 'country', 'order_notes','order_id','payment_intent_id','stripe_session_id','payment_status','stripe_customer_id'
     ];
 
     public function saleProducts()

@@ -35,6 +35,7 @@ class StripeController extends Controller
 
         // Stripe requires the amount in cents (or the smallest unit)
         $totalAmountInCents = (int) ($totalPrice * 100);
+            $successUrl = url('/payment/success') . '?session_id={CHECKOUT_SESSION_ID}';
 
         $session = Session::create([
             'payment_method_types' => ['card'],
@@ -49,7 +50,7 @@ class StripeController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => url('/payment/success'),
+            'success_url' =>  $successUrl,
             'cancel_url' => url('/payment/cancel'),
         ]);
 
@@ -64,6 +65,7 @@ class StripeController extends Controller
             $sessionId = $request->query('session_id');
 
             if (!$sessionId) {
+                \Log::info('session id not found');
                 return redirect()->route('home')->with('error', 'Invalid payment session.');
             }
 
@@ -104,6 +106,8 @@ class StripeController extends Controller
                 'total_price' => $totalPrice,
                 'order_id' => $randomOrderId,
                 'stripe_session_id' => $session->id,
+                'payment_intent_id' => $session->payment_intent,
+                'stripe_customer_id' => $session->customer,
                 'payment_status' => 'paid',
                 'status' => 'processing',
             ]);
@@ -127,6 +131,11 @@ class StripeController extends Controller
 
             // Clear session data
             session()->forget(['cart', 'billingDetail']);
+            \Log::info('Stripe session details:', [
+    'session_id' => $session->id,
+    'customer' => $session->customer,
+    'payment_intent' => $session->payment_intent,
+]);
 
             return redirect()->route('user.order.list')->with('success', 'Thank you! Your payment was successful and your order has been placed. Order ID: ' . $randomOrderId);
         } catch (\Exception $e) {
