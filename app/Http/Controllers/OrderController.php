@@ -207,6 +207,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -268,6 +271,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -329,6 +335,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -390,6 +399,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -452,6 +464,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -513,6 +528,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -574,6 +592,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -635,6 +656,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -696,6 +720,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -757,6 +784,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -818,6 +848,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
@@ -879,6 +912,9 @@ public function orderGenerate(Request $request)
                     'order_notes' => $order->order_notes,
                     'subtotal_price' => $order->subtotal_price,
                     'total_price' => $order->total_price,
+                    'payment_status' => $order->payment_status,
+                    'payment_method' => $order->payment_method,
+                    'payment_intent_id' => $order->payment_intent_id,
                     'created_at' => $order->created_at->format('Y-m-d H:i:s'),
                     'sale_products' => $order->saleProducts->map(function ($saleProduct) use ($locale) {
                         return [
