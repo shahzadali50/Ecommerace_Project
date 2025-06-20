@@ -68,43 +68,28 @@ const selectProduct = (product: Product) => {
 </script>
 
 <template>
-    <div class="relative w-64">
-        <a-input-search
-            v-model:value="searchQuery"
-            placeholder="Search products..."
-            :loading="loading"
-            @input="searchProducts"
-            class="focus:ring-2 focus:ring-blue-500"
-        />
-        <div
-            v-if="showDropdown && searchResults.length"
-            class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1"
-        >
+    <div class="w-full md:w-64 relative">
+        <a-input-search v-model:value="searchQuery" placeholder="Search products..." :loading="loading"
+            @input="searchProducts" class="focus:ring-2 focus:ring-blue-500" />
+        <div v-if="showDropdown && searchResults.length"
+            class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
             <ul>
-                <li
-                    v-for="product in searchResults"
-                    :key="product.id"
+                <li v-for="product in searchResults" :key="product.id"
                     class="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    @click="selectProduct(product)"
-                >
-                    <img
-                        :src="product.thumnail_img ? '/storage/' + product.thumnail_img : '/images/placeholder.jpg'"
-                        :alt="product.name || 'Product thumbnail'"
-                        class="w-10 h-10 object-cover rounded mr-3"
-                        loading="lazy"
-                    />
+                    @click="selectProduct(product)">
+                    <img :src="product.thumnail_img ? '/storage/' + product.thumnail_img : '/images/placeholder.jpg'"
+                        :alt="product.name || 'Product thumbnail'" class="w-10 h-10 object-cover rounded mr-3"
+                        loading="lazy" />
                     <div class="flex-1">
                         <span class="text-gray-900 font-medium">{{ product.name }}</span>
                         <div class="flex items-center space-x-2">
-                            <span
-                                v-if="product.sale_price !== product.final_price"
-                                class="text-gray-500 line-through text-sm"
-                            >
-                                <span class="sr-only">Original price: </span>
+                            <span v-if="product.sale_price !== product.final_price"
+                                class="text-gray-500 line-through text-sm">
+                                <span></span>
                                 {{ formatPrice(product.sale_price) }}
                             </span>
                             <span class="text-green-600 font-semibold">
-                                <span class="sr-only">Current price: </span>
+                                <span class="text-xs sm:text-sm md:text-base text-secondary line-through"> </span>
                                 {{ formatPrice(product.final_price) }}
                             </span>
                         </div>
@@ -112,11 +97,9 @@ const selectProduct = (product: Product) => {
                 </li>
             </ul>
         </div>
-        <div
-            v-if="showDropdown && !searchResults.length && !loading && searchQuery"
-            class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg p-4 mt-1 text-gray-600"
-        >
-            No products found.
+        <div v-if="showDropdown && !searchResults.length && !loading && searchQuery"
+            class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg p-4 mt-1 text-gray-600">
+            We're sorry, no products match your search.
         </div>
     </div>
 </template>
@@ -129,30 +112,5 @@ img {
 
 img:not([src]) {
     background-color: #f0f0f0;
-}
-
-/* Screen-reader-only class for accessibility */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-    .w-64 {
-        @apply w-full;
-    }
-    img {
-        @apply w-8 h-8;
-    }
-    .text-sm {
-        @apply text-xs;
-    }
 }
 </style>

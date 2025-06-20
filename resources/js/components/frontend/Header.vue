@@ -223,7 +223,8 @@ const toggleSearch = () => {
             </div>
             <Transition name="fade-slide">
                 <div v-if="mobileSearchVisible" class="md:hidden mt-4">
-                    <a-input-search placeholder="Search products..." class="w-full" />
+                    <!-- <a-input-search placeholder="Search products..." class="w-full" /> -->
+                      <SearchProducts/>
                 </div>
             </Transition>
 
