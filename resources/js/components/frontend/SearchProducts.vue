@@ -40,7 +40,7 @@ watch(searchQuery, (newQuery) => {
 
 // Handle product click to navigate to product detail page
 const selectProduct = (product: any) => {
-  router.visit(route('product.show', product.slug));
+  router.visit(route('product.detail', product.slug));
   searchQuery.value = '';
   searchResults.value = [];
   showDropdown.value = false;
