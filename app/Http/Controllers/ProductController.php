@@ -390,7 +390,6 @@ public function search(Request $request)
                     'thumnail_img' => $product->thumnail_img,
                     'sale_price' => $product->sale_price,
                     'final_price' => $product->final_price,
-                    'category_name' => $product->category?->category_translations->first()?->name ?? $product->category?->name ?? 'N/A',
                 ];
             });
 

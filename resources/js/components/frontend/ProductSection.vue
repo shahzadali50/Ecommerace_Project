@@ -50,7 +50,7 @@ const products = computed<Product[]>(() => (page.props.products as any)?.data ||
 
 // Format price
 const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-PK', {
         style: 'currency',
         currency: 'PKR',
         minimumFractionDigits: 2,
