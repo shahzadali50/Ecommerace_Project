@@ -26,7 +26,7 @@ Route::get('shop', [MainController::class, 'allProducts'])->name('all.products')
 Route::post('/create-checkout-session', [StripeController::class, 'createCheckoutSession'])->name('stripe.checkout');
 Route::get('/payment/cancel', [StripeController::class, 'paymentCancel'])->name('stripe.cancel');
 Route::get('/payment/success', [StripeController::class, 'paymentSuccess'])->name('stripe.success');
-Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
+Route::get('/products/search', [ProductController::class, 'productSearch'])->name('products.search');
 
 Route::middleware(['auth', 'admin', 'verified'])->name('admin.')->group(function () {
     Route::get('cache-clear', [MainController::class, 'cacheClear'])->name('cache.clear');

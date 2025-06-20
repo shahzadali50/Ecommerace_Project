@@ -364,7 +364,7 @@ class ProductController extends Controller
     }
 
     // ProductController.php
-public function search(Request $request)
+public function productSearch(Request $request)
 {
     try {
         $locale = session('locale', App::getLocale());
