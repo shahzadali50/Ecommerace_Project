@@ -16,6 +16,7 @@ import {
     UserOutlined,
     SearchOutlined,
 } from '@ant-design/icons-vue';
+import SearchProducts from './SearchProducts.vue';
 
 const page = usePage();
 const translations = computed(() => {
@@ -81,7 +82,7 @@ const toggleSearch = () => {
                 <div class="flex items-center space-x-0">
                     <!-- Search -->
                     <div class="hidden md:block">
-                        <a-input-search placeholder="Search products..." class="w-64" />
+                    <SearchProducts/>
                     </div>
 
                     <!-- Language Switcher - Visible on both mobile and desktop -->

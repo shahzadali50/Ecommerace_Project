@@ -255,7 +255,7 @@ class ProductController extends Controller
             'description' => 'required|string',
             'brand_id' => 'required|exists:brands,id',
             'category_id' => 'required|exists:categories,id',
-'thumnail_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:1048',
+            'thumnail_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:1048',
             'gallary_img' => 'nullable',
             'gallary_img.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5048',
             'stock' => 'required|integer|min:0',
@@ -362,5 +362,46 @@ class ProductController extends Controller
             'locale' => $locale,
         ]);
     }
+
+    // ProductController.php
+public function search(Request $request)
+{
+    try {
+        $locale = session('locale', App::getLocale());
+        $query = $request->input('query');
+
+        $products = Product::where('status', 1)
+            ->where(function ($q) use ($query, $locale) {
+                $q->where('name', 'like', "%{$query}%")
+                  ->orWhereHas('product_translations', function ($q) use ($query, $locale) {
+                      $q->where('lang', $locale)->where('name', 'like', "%{$query}%");
+                  });
+            })
+            ->with([
+                'category' => fn($q) => $q->with(['category_translations' => fn($q) => $q->where('lang', $locale)]),
+                'product_translations' => fn($q) => $q->where('lang', $locale),
+            ])
+            ->get()
+            ->map(function ($product) use ($locale) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->product_translations->first()?->name ?? $product->name,
+                    'slug' => $product->slug,
+                    'thumnail_img' => $product->thumnail_img,
+                    'sale_price' => $product->sale_price,
+                    'final_price' => $product->final_price,
+                    'category_name' => $product->category?->category_translations->first()?->name ?? $product->category?->name ?? 'N/A',
+                ];
+            });
+
+        return response()->json([
+            'products' => $products,
+        ]);
+    } catch (\Throwable $e) {
+        \Log::error('Failed to search products: ' . $e->getMessage());
+        return response()->json(['error' => 'Something went wrong while searching products.'], 500);
+    }
+}
+
 
 }
