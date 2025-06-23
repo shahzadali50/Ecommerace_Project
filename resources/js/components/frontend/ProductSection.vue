@@ -39,7 +39,6 @@ const props = defineProps<{
     showSubTitle?: boolean;
     sectionClass?: string;
 }>();
-
 const page = usePage();
 
 const translations = computed(() => {
