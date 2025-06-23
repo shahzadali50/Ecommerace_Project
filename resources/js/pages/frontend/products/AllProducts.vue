@@ -58,12 +58,15 @@ const productCountText = computed(() => {
       </div>
     </section>
 
-    <ProductSection
-      :showPagination="true"
-      :showFilter="true"
-      :categories="page.props.categories"
-      :selectedCategory="page.props.selectedCategory"
-      sectionClass="py-4"
-    />
+  <ProductSection
+  :showPagination="true"
+  :showFilter="true"
+  :categories="page.props.categories"
+  :selectedCategory="page.props.selectedCategory"
+  :brands="page.props.brands"
+  :selectedBrand="page.props.selectedBrand"
+  sectionClass="py-4"
+/>
+
   </UserLayout>
 </template>

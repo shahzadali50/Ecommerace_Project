@@ -34,6 +34,7 @@ const props = defineProps<{
     showPagination?: boolean;
     categories?: Category[];
     selectedCategory?: string | null;
+    selectedBrand?: string | null;
     showTitle?: boolean;
     showSubTitle?: boolean;
     sectionClass?: string;
@@ -119,8 +120,9 @@ const isInWishlist = (productId: number) => {
 <template>
     <section>
         <div class="container  mx-auto">
-            <FilterProduct v-if="props.showFilter === true" :categories="props.categories"
-                :selectedCategory="props.selectedCategory" :translations="translations" />
+            <FilterProduct v-if="props.showFilter === true" :categories="page.props.categories"
+                :selectedCategory="page.props.selectedCategory" :brands="page.props.brands"
+                :selectedBrand="page.props.selectedBrand" :translations="translations" />
         </div>
     </section>
     <section :class="['', props.sectionClass]">
@@ -134,7 +136,7 @@ const isInWishlist = (productId: number) => {
                 </p>
             </div>
 
-            <div v-if="products.length > 0">
+           <div v-if="products.length > 0">
                 <!-- Product Cards -->
                 <Row :gutter="[16, 16]">
                     <Col :xs="12" :sm="12" :md="8" :lg="8" :xl="6" v-for="product in products" :key="product.id"

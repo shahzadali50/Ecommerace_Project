@@ -233,6 +233,7 @@ public function allProducts(Request $request)
         $locale = session('locale', App::getLocale());
         $page = $request->query('page', 1);
         $categorySlug = $request->query('category');
+         $brandSlug = $request->query('brand');
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
 
@@ -251,6 +252,20 @@ public function allProducts(Request $request)
                     'product_count' => $category->products_count,
                 ];
             });
+        $brands = Brand::withCount('products')
+            ->with(['brand_translations' => fn($q) => $q->where('lang', $locale)])
+            ->whereHas('products', function ($q) {
+                $q->where('status', 1);
+            })
+            ->get()
+            ->map(function ($brands ) use ($locale) {
+                return [
+                    'id' => $brands ->id,
+                    'name' => $brands ->brand_translations->first()?->name ?? $brands->name,
+                    'slug' => $brands ->slug,
+                    'product_count' => $brands ->products_count,
+                ];
+            });
 
         // Fetch products with optional filters
         $query = Product::where('status', 1)
@@ -263,6 +278,12 @@ public function allProducts(Request $request)
         if ($categorySlug) {
             $query->whereHas('category', function ($q) use ($categorySlug) {
                 $q->where('slug', $categorySlug);
+            });
+        }
+            // Brand filter
+        if ($brandSlug) {
+            $query->whereHas('brand', function ($q) use ($brandSlug) {
+                $q->where('slug', $brandSlug);
             });
         }
 
@@ -298,10 +319,12 @@ public function allProducts(Request $request)
         return Inertia::render('frontend/products/AllProducts', [
             'products' => $products,
             'categories' => $categories,
+            'brands' => $brands,
             'wishlist' => $wishlist,
             'translations' => __('messages'),
             'locale' => $locale,
             'selectedCategory' => $categorySlug,
+            'selectedBrand' => $brandSlug,
         ]);
     } catch (\Throwable $e) {
         \Log::error('Failed to load products: ' . $e->getMessage());

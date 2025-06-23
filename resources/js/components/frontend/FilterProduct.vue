@@ -3,9 +3,16 @@ import { defineProps } from 'vue';
 import { router, Link } from '@inertiajs/vue3';
 import { Button, Collapse, CollapsePanel, Checkbox } from 'ant-design-vue';
 import { ClearOutlined, FilterOutlined } from '@ant-design/icons-vue';
-import {  ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    product_count: number;
+}
+
+interface Brand {
     id: number;
     name: string;
     slug: string;
@@ -15,13 +22,16 @@ interface Category {
 const props = defineProps<{
     categories?: Category[];
     selectedCategory?: string | null;
+    brands?: Brand[];
+    selectedBrand?: string | null;
 }>();
 
 const isFilterDrawerVisible = ref(false);
 const openFilterDrawer = () => { isFilterDrawerVisible.value = true; };
 const closeFilterDrawer = () => { isFilterDrawerVisible.value = false; };
 
-const activeKey = ref(['1']);
+const activeKey = ref(['1', '2']);
+
 
 // Bind min/max price
 const minPrice = ref<number | null>(null);
@@ -32,6 +42,26 @@ const filterByCategory = (categorySlug: string | null) => {
         route('all.products'),
         {
             category: categorySlug,
+            min_price: minPrice.value,
+            max_price: maxPrice.value,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            onSuccess: () => {
+                closeFilterDrawer();
+            },
+        }
+    );
+};
+
+const filterByBrand = (brandSlug: string | null) => {
+    router.get(
+        route('all.products'),
+        {
+            category: props.selectedCategory,
+            brand: brandSlug,
             min_price: minPrice.value,
             max_price: maxPrice.value,
         },
@@ -101,12 +131,12 @@ onUnmounted(() => {
                 <div>
                     <div class="flex items-end gap-2 my-4">
                         <div class="">
-                            <label class="block text-xs mb-1">Min Price</label>
-                            <a-input type="number" placeholder="Min price" min="0" v-model:value="minPrice" />
+                            <label class="block text-xs mb-1">From</label>
+                            <a-input type="number" placeholder="00000" min="0" v-model:value="minPrice" />
                         </div>
                         <div class="">
-                            <label class="block text-xs mb-1">Max Price</label>
-                            <a-input type="number" placeholder="Max price" min="0" v-model:value="maxPrice" />
+                            <label class="block text-xs mb-1">To</label>
+                            <a-input type="number" placeholder="2000" min="0" v-model:value="maxPrice" />
                         </div>
                         <div class="">
 
@@ -124,11 +154,21 @@ onUnmounted(() => {
                             <Checkbox :checked="props.selectedCategory === category.slug">
                                 {{ category.name }}
                             </Checkbox>
-                            <p class="mb-0">
-                                {{ category.product_count }} Products
-                            </p>
+                             <a-badge :count="category.product_count" :number-style="{ backgroundColor: '#757d87' }" />
                         </div>
                     </CollapsePanel>
+                    <CollapsePanel key="2" header="Filter by Brand">
+                        <div v-for="brand in props.brands" :key="brand.id"
+                            class="flex justify-between items-center mb-2 cursor-pointer"
+                            @click="filterByBrand(brand.slug === props.selectedBrand ? null : brand.slug)">
+                            <Checkbox :checked="props.selectedBrand === brand.slug">
+                                {{ brand.name }}
+                            </Checkbox>
+                              <a-badge :count=" brand.product_count" :number-style="{ backgroundColor: '#757d87' }" />
+
+                        </div>
+                    </CollapsePanel>
+
                 </Collapse>
             </div>
         </a-drawer>
