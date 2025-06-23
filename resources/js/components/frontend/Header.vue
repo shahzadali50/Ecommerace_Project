@@ -18,6 +18,17 @@ import {
 } from '@ant-design/icons-vue';
 import SearchProducts from './SearchProducts.vue';
 
+const cart = computed(() => {
+    const data = page.props.cart as any[] || [];
+    return data.map(item => ({
+        ...item,
+        quantity: item.qty || 0,
+    }));
+});
+const totalCartQty = computed(() => {
+    return cart.value.reduce((sum, item) => sum + (item.quantity || 0), 0);
+});
+
 const page = usePage();
 const translations = computed(() => {
     return (page.props.translations as any)?.header || {};
@@ -63,16 +74,18 @@ const toggleSearch = () => {
                 <!-- Desktop Navigation -->
                 <nav class="hidden lg:flex items-center space-x-8">
 
-                    <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">
+
+                    <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-[18px]">
                     {{ translations.home || 'Home' }}
+                    {{ totalCartQty }}
                     </Link>
-                    <Link :href="route('all.products')" class="text-gray-600 hover:text-gray-900">
+                    <Link :href="route('all.products')" class="text-gray-600 hover:text-gray-900 text-[18px]">
                     {{ translations.shop || 'Shop' }}
                     </Link>
-                    <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">
+                    <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-[18px]">
                     {{ translations.categories || 'Categories' }}
                     </Link>
-                    <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">
+                    <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-[18px]">
                     {{ translations.brands || 'Brands' }}
                     </Link>
                 </nav>
@@ -82,7 +95,7 @@ const toggleSearch = () => {
                 <div class="flex items-center space-x-0">
                     <!-- Search -->
                     <div class="hidden md:block">
-                    <SearchProducts/>
+                        <SearchProducts />
                     </div>
 
                     <!-- Language Switcher - Visible on both mobile and desktop -->
@@ -107,16 +120,14 @@ const toggleSearch = () => {
                                     </a-menu-item>
                                     <a-menu-divider />
                                     <a-menu-item key="logout">
-
-                                        <a href="#" @click.prevent="handleLogout">{{ translations.logout || 'Logout'
-                                        }}</a>
+                                     <a href="#" @click.prevent="handleLogout">{{ translations.logout || 'Logout'}}</a>
                                     </a-menu-item>
                                 </a-menu>
                             </template>
                         </a-dropdown>
                         <div v-else class="flex space-x-2">
                             <a-dropdown trigger="click">
-                                <a-button type="text" shape="circle">
+                                <a-button class="text-[18px] p-0" type="text" shape="circle">
                                     <template #icon>
                                         <UserOutlined />
                                     </template>
@@ -143,14 +154,15 @@ const toggleSearch = () => {
 
                     <!-- User Actions - Only visible on desktop -->
                     <div class="hidden lg:flex items-center space-x-2">
-                        <a-button type="text" shape="circle" @click="goToWishlist">
+                        <a-button class="text-[18px] p-0" type="text" shape="circle" @click="goToWishlist">
                             <template #icon>
                                 <HeartOutlined />
                             </template>
                         </a-button>
-                        <a-button type="text" shape="circle" @click="toggleCart">
+                        <a-button class="text-[18px] p-0" type="text" shape="circle" @click="toggleCart">
                             <template #icon>
                                 <ShoppingCartOutlined />
+                                <a-badge  :count="totalCartQty" class="absolute left-[14px] top-0"></a-badge>
                             </template>
                         </a-button>
                         <a-dropdown v-if="isAuthenticated">
@@ -171,15 +183,14 @@ const toggleSearch = () => {
                                     <a-menu-divider />
                                     <a-menu-item key="logout">
 
-                                        <a href="#" @click.prevent="handleLogout">{{ translations.logout || 'Logout'
-                                        }}</a>
+                                        <a href="#" @click.prevent="handleLogout">{{ translations.logout || 'Logout'}}</a>
                                     </a-menu-item>
                                 </a-menu>
                             </template>
                         </a-dropdown>
                         <div v-else class="flex space-x-2">
                             <a-dropdown>
-                                <a-button type="text" shape="circle">
+                                <a-button class="text-[18px] p-0" type="text" shape="circle">
                                     <template #icon>
                                         <UserOutlined />
                                     </template>
@@ -202,7 +213,7 @@ const toggleSearch = () => {
                         </div>
                     </div>
                     <div class="md:hidden ">
-                        <a-button type="text" shape="circle" @click="toggleSearch">
+                        <a-button class="text-[18px] p-0" type="text" shape="circle" @click="toggleSearch">
                             <template #icon>
                                 <SearchOutlined />
                             </template>
@@ -224,7 +235,7 @@ const toggleSearch = () => {
             <Transition name="fade-slide">
                 <div v-if="mobileSearchVisible" class="md:hidden mt-4">
                     <!-- <a-input-search placeholder="Search products..." class="w-full" /> -->
-                      <SearchProducts/>
+                    <SearchProducts />
                 </div>
             </Transition>
 
@@ -236,7 +247,8 @@ const toggleSearch = () => {
     <MobileSidebar v-model:visible="mobileMenuOpen" />
 
     <!-- Mobile Bottom Navigation -->
-    <MobileBottomNav @toggle-cart="toggleCart" />
+    <MobileBottomNav :total-cart-qty="totalCartQty" @toggle-cart="toggleCart" />
+
 
     <!-- Cart Sidebar -->
     <CartSidebar v-model:visible="cartDrawerVisible" />

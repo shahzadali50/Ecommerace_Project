@@ -43,7 +43,7 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
 
   <a-button
     type="text"
-    class="flex items-center gap-1 focus:outline-none hover:bg-transparent mt-1"
+    class="flex items-center gap-1 focus:outline-none hover:bg-transparent mt-2 text-[18px]"
     aria-label="Select language"
   >
     <GlobalOutlined />

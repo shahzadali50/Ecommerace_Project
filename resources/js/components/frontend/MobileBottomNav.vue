@@ -19,6 +19,10 @@ defineProps({
         type: Boolean,
         default: false,
     },
+     totalCartQty: {
+    type: Number,
+    default: 0,
+  },
 });
 
 
@@ -51,6 +55,8 @@ const toggleCart = () => {
                 @click="toggleCart">
                 <ShoppingCartOutlined class="text-xl" />
                 <span class="text-xs mt-1">{{ translations.cart || 'Cart' }}</span>
+                <a-badge :count="totalCartQty" class="absolute right-[16px] top-[8px]"></a-badge>
+
             </a>
         </div>
     </div>
