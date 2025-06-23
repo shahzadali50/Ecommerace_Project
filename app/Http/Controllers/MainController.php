@@ -78,7 +78,6 @@ class MainController extends Controller
             return redirect()->back()->with('error', 'Something went wrong while loading products.');
         }
     }
-
     public function productDetail($slug)
     {
         try {
