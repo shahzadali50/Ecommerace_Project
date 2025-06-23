@@ -28,6 +28,12 @@ const cart = computed(() => {
 const totalCartQty = computed(() => {
     return cart.value.reduce((sum, item) => sum + (item.quantity || 0), 0);
 });
+// whislistchCount
+const wishlist = computed(() => {
+    return page.props.wishlist as number[] || [];
+});
+const wishlistCount = computed(() => wishlist.value.length);
+
 
 const page = usePage();
 const translations = computed(() => {
@@ -58,6 +64,7 @@ const mobileSearchVisible = ref(false);
 const toggleSearch = () => {
     mobileSearchVisible.value = !mobileSearchVisible.value;
 };
+
 </script>
 <template>
     <header class="bg-white shadow fixed top-0 left-0 right-0 z-50">
@@ -77,7 +84,6 @@ const toggleSearch = () => {
 
                     <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-[18px]">
                     {{ translations.home || 'Home' }}
-                    {{ totalCartQty }}
                     </Link>
                     <Link :href="route('all.products')" class="text-gray-600 hover:text-gray-900 text-[18px]">
                     {{ translations.shop || 'Shop' }}
@@ -104,7 +110,7 @@ const toggleSearch = () => {
                     </div>
                     <div class="block lg:hidden">
                         <a-dropdown v-if="isAuthenticated" trigger="click">
-                            <a-button type="text" shape="circle">
+                            <a-button class="text-[18px] p-0" type="text" shape="circle">
 
                                 <template #icon>
                                     <UserOutlined />
@@ -157,6 +163,8 @@ const toggleSearch = () => {
                         <a-button class="text-[18px] p-0" type="text" shape="circle" @click="goToWishlist">
                             <template #icon>
                                 <HeartOutlined />
+                                <a-badge  :count="wishlistCount" class="absolute left-[14px] top-0"></a-badge>
+
                             </template>
                         </a-button>
                         <a-button class="text-[18px] p-0" type="text" shape="circle" @click="toggleCart">
@@ -166,7 +174,7 @@ const toggleSearch = () => {
                             </template>
                         </a-button>
                         <a-dropdown v-if="isAuthenticated">
-                            <a-button type="text" shape="circle">
+                            <a-button class="text-[18px] p-0" type="text" shape="circle">
 
                                 <template #icon>
                                     <UserOutlined />
@@ -247,7 +255,7 @@ const toggleSearch = () => {
     <MobileSidebar v-model:visible="mobileMenuOpen" />
 
     <!-- Mobile Bottom Navigation -->
-    <MobileBottomNav :total-cart-qty="totalCartQty" @toggle-cart="toggleCart" />
+    <MobileBottomNav :total-cart-qty="totalCartQty"  @toggle-cart="toggleCart" />
 
 
     <!-- Cart Sidebar -->

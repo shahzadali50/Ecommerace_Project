@@ -24,6 +24,11 @@ defineProps({
     default: 0,
   },
 });
+const wishlist = computed(() => {
+    return page.props.wishlist as number[] || [];
+});
+const wishlistCount = computed(() => wishlist.value.length);
+
 
 
 const emit = defineEmits(['toggleCart', 'logout']);
@@ -44,18 +49,20 @@ const toggleCart = () => {
             <ShopOutlined class="text-xl" />
             <span class="text-xs mt-1">{{ translations.shop || 'Shop' }}</span>
             </Link>
-            <Link :href="route('wishlist')" class="flex flex-col items-center"
+            <Link :href="route('wishlist')" class="flex flex-col items-center relative "
                 :class="currentPath === route('wishlist', {}, false) ? 'text-black font-bold' : 'text-gray-600'">
             <HeartOutlined class="text-xl" />
             <span class="text-xs mt-1">{{ translations.whishlist || 'Whislist' }}</span>
+            
+              <a-badge :count="wishlistCount" class="absolute right-[-3px] top-[-5px]"></a-badge>
             </Link>
 
-            <a class="flex flex-col items-center"
+            <a class="flex flex-col items-center relative"
                 :class="[currentPath === route('cart.checkout', {}, false) || currentPath === route('cart.payment', {}, false) ? 'text-black font-bold' : 'text-gray-600']"
                 @click="toggleCart">
                 <ShoppingCartOutlined class="text-xl" />
                 <span class="text-xs mt-1">{{ translations.cart || 'Cart' }}</span>
-                <a-badge :count="totalCartQty" class="absolute right-[16px] top-[8px]"></a-badge>
+                <a-badge :count="totalCartQty" class="absolute left-[15px] top-[-5px]"></a-badge>
 
             </a>
         </div>
