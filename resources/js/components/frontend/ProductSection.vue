@@ -16,6 +16,7 @@ interface Product {
     sale_price: number;
     thumnail_img: string;
     category_name: string;
+    stock: number;
 }
 
 interface Category {
@@ -186,13 +187,18 @@ const isInWishlist = (productId: number) => {
                                     </span>
                                 </div>
                             </div>
-                            <Button type="primary" class="btn-primary flex items-center justify-center mt-2"
-                                :loading="addingToCart.has(product.id)" @click.stop="addToCart(product)"
+                            <Button type="primary"
+                                :class="[
+                                    'flex items-center justify-center mt-2',
+                                    product.stock === 0 ? '!bg-gray-400 !text-white !border-gray-400 cursor-not-allowed hover:!bg-gray-400': 'btn-primary']"
+                                :loading="addingToCart.has(product.id)"
+                                :disabled="product.stock === 0"
+                                @click.stop="addToCart(product)"
                                 aria-label="Add to cart">
                                 <template #icon>
                                     <ShoppingCartOutlined />
                                 </template>
-                                {{ translations.add_to_cart || 'Add to Cart' }}
+                                {{ product.stock === 0 ? (translations.out_of_stock || 'Out of Stock') : (translations.add_to_cart || 'Add to Cart') }}
                             </Button>
                         </div>
                     </Card>
@@ -215,7 +221,7 @@ const isInWishlist = (productId: number) => {
             </div>
 
             <div v-else>
-                <a-result status="404" title="404" sub-title="We couldn’t find any products matching your search.">
+                <a-result status="404" title="404" sub-title="We couldn't find any products matching your search.">
                     <template #extra>
                         <Button class="btn-primary" size="large" type="primary">
                             <Link :href="route('all.products')">

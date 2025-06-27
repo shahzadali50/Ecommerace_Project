@@ -55,6 +55,7 @@ class MainController extends Controller
                     'id' => $product->id,
                     'name' => $product->product_translations->first()?->name ?? $product->name,
                     'slug' => $product->slug,
+                    'stock' => $product->stock,
                     'thumnail_img' => $product->thumnail_img,
                     'sale_price' => $product->sale_price,
                     'final_price' => $product->final_price,
@@ -308,6 +309,7 @@ public function allProducts(Request $request)
                 'thumnail_img' => $product->thumnail_img,
                 'sale_price' => $product->sale_price,
                 'final_price' => $product->final_price,
+                'stock' => $product->stock,
                 'category_name' => $product->category?->category_translations->first()?->name ?? $product->category?->name ?? 'N/A',
             ];
         });
