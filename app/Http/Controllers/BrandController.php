@@ -310,4 +310,5 @@ public function related_brand_list($slug)
             'BrandLog' => $brandLog,
         ]);
     }
+    
 }
