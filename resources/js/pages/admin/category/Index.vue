@@ -57,6 +57,16 @@ const editImagePreview = ref('');
 const isImagePreviewModalVisible = ref(false);
 const previewImageUrl = ref('');
 
+const isEditModalVisible = ref(false);
+const isbrandModalVisible = ref(false);
+const isImportModalVisible = ref(false);
+const isImporting = ref(false);
+
+// Import form
+const importForm = useForm({
+    excel_file: null as File | null,
+});
+
 // DataTable columns for categories
 const dataTableColumns = [
     { title: translations.value.sr || 'Sr.', data: null, render: (data: any, type: any, row: any, meta: any) => meta.row + 1 },
@@ -173,8 +183,9 @@ const deleteCategory = (id: number) => {
     });
 };
 
-const isEditModalVisible = ref(false);
-const isbrandModalVisible = ref(false);
+const importCategory = () => {
+    isImportModalVisible.value = true;
+}
 
 const openEditModal = (category: any) => {
     editForm.id = category.id;
@@ -234,6 +245,59 @@ const openImagePreview = (imagePath: string) => {
     previewImageUrl.value = '/storage/' + imagePath;
     isImagePreviewModalVisible.value = true;
 };
+
+const handleImportData = () => {
+    if (!importForm.excel_file) {
+        console.log('No file selected');
+        return;
+    }
+
+    console.log('File selected:', importForm.excel_file);
+    console.log('File name:', importForm.excel_file.name);
+    console.log('File type:', importForm.excel_file.type);
+    console.log('File size:', importForm.excel_file.size);
+
+    isImporting.value = true;
+
+    // Create FormData manually
+    const formData = new FormData();
+    formData.append('excel_file', importForm.excel_file);
+
+    // Use router.post with FormData
+    router.post(route('admin.import.data'), formData, {
+        onSuccess: () => {
+            isImportModalVisible.value = false;
+            importForm.reset();
+        },
+        onError: (errors) => {
+            console.error('Import errors:', errors);
+        },
+        onFinish: () => {
+            isImporting.value = false;
+        }
+    });
+};
+
+const handleExcelFileChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    if (target.files && target.files[0]) {
+        importForm.excel_file = target.files[0];
+    }
+};
+
+const downloadTemplate = () => {
+    // Create a simple CSV template
+    const csvContent = "name,description\nElectronics,Electronic devices and accessories\nClothing,Fashion and apparel items\nBooks,Educational and entertainment books";
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'categories_import_template.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+};
 </script>
 
 <template>
@@ -252,6 +316,9 @@ const openImagePreview = (imagePath: string) => {
                         <div>
                             <a-button @click="openAddCategoryModal()" type="default">
                                 {{ translations.add_category || 'Add Category' }}
+                            </a-button>
+                            <a-button @click="importCategory()" type="default">
+                                Import Category
                             </a-button>
                             <Link :href="route('admin.category.log')">
                             <a-button type="default">
@@ -279,6 +346,8 @@ const openImagePreview = (imagePath: string) => {
                 </div>
             </a-col>
         </a-row>
+
+
 
         <!-- Add Category Modal -->
         <a-modal v-model:open="isAddCategoryModalVisible" :title="translations.add_category || 'Add Category'"
@@ -408,6 +477,34 @@ const openImagePreview = (imagePath: string) => {
             <div class="flex justify-center p-4">
                 <img :src="previewImageUrl" alt="Full Size Image" class="max-w-full max-h-[500px] object-cover" />
             </div>
+        </a-modal>
+
+        <!-- Import Category Modal -->
+        <a-modal v-model:open="isImportModalVisible" :title="translations.import_category || 'Import Category'"
+            @cancel="isImportModalVisible = false" :footer="null">
+            <form @submit.prevent="handleImportData()" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label class="block font-medium mb-2">{{ translations.excel_file || 'Excel File' }}</label>
+                    <input type="file"
+                        @change="handleExcelFileChange"
+                        accept=".xlsx,.xls,.csv"
+                        class="mt-2 w-full p-2 border rounded"
+                        required />
+                    <div class="text-sm text-gray-500 mt-1">
+                        {{ translations.supported_formats || 'Supported formats: XLSX, XLS, CSV' }}
+                    </div>
+                    <div v-if="importForm.errors.excel_file" class="text-red-500 mt-1">{{ importForm.errors.excel_file }}</div>
+                </div>
+
+                <div class="text-right">
+                    <a-button type="default" @click="isImportModalVisible = false">
+                        {{ translations.cancel || 'Cancel' }}
+                    </a-button>
+                    <a-button type="primary" html-type="submit" class="ml-2" :loading="isImporting">
+                        {{ translations.import || 'Import' }}
+                    </a-button>
+                </div>
+            </form>
         </a-modal>
     </AdminLayout>
 </template>

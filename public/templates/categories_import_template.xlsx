@@ -1,0 +1,13 @@
+# This is a placeholder for the Excel template file
+# The actual Excel file should be created manually with the following structure:
+#
+# Column A: name (Category Name)
+# Column B: description (Category Description)
+#
+# Example rows:
+# name,description
+# Electronics,Electronic devices and accessories
+# Clothing,Fashion and apparel items
+# Books,Educational and entertainment books
+#
+# Users should download this template, fill it with their data, and upload it back.
