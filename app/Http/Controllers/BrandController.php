@@ -120,7 +120,6 @@ public function related_brand_list($slug)
     }
 }
 
-
     public function store(Request $request)
     {
         $request->validate([
@@ -310,5 +309,5 @@ public function related_brand_list($slug)
             'BrandLog' => $brandLog,
         ]);
     }
-    
+
 }
