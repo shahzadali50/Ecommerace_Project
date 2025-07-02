@@ -6,6 +6,7 @@ use Log;
 use Exception;
 use Inertia\Inertia;
 use App\Models\Category;
+use App\Imports\DataImport;
 use App\Models\CategoryLog;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -18,6 +19,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+
+
 
 class CategoryController extends Controller
 {
@@ -262,55 +265,69 @@ class CategoryController extends Controller
     }
     public function import(Request $request)
     {
-        // Debug: Log the request data
-        Log::info('Import request received', [
-            'has_file' => $request->hasFile('excel_file'),
-            'file_name' => $request->file('excel_file')?->getClientOriginalName(),
-            'file_size' => $request->file('excel_file')?->getSize(),
-            'file_mime' => $request->file('excel_file')?->getMimeType(),
-            'all_files' => $request->allFiles(),
-            'content_type' => $request->header('Content-Type'),
-        ]);
-
-        // Check if file exists before validation
-        if (!$request->hasFile('excel_file')) {
-            Log::error('No file uploaded');
-            return redirect()->back()->with('error', 'No file uploaded');
-        }
-
-        $file = $request->file('excel_file');
-        Log::info('File details', [
-            'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize(),
-            'extension' => $file->getClientOriginalExtension(),
-        ]);
-
+        // dd($request->all());
         $request->validate([
-            'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:2048',
+            'file' => 'required|max:2048',
         ]);
+        Excel::import(new DataImport, $request->file('file'));
+        // dd('done');
+        return redirect()->back()->with('success', 'Data imported successfully.');
 
-        try {
-            $import = new CategoryImport();
 
-            Excel::import($import, $request->file('excel_file'));
 
-            $importedCount = $import->getImportedCount();
-            $errors = $import->getErrors();
-
-            $message = "Successfully imported {$importedCount} categories.";
-
-            if (!empty($errors)) {
-                $message .= " Errors: " . implode(', ', $errors);
-            }
-
-            return redirect()->back()->with('success', $message);
-
-        } catch (\Exception $e) {
-            Log::error('Category import failed: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Import failed: ' . $e->getMessage());
-        }
     }
+    // public function import(Request $request)
+    // {
+    //     dd($request->all());
+    //     // Debug: Log the request data
+    //     Log::info('Import request received', [
+    //         'has_file' => $request->hasFile('excel_file'),
+    //         'file_name' => $request->file('excel_file')?->getClientOriginalName(),
+    //         'file_size' => $request->file('excel_file')?->getSize(),
+    //         'file_mime' => $request->file('excel_file')?->getMimeType(),
+    //         'all_files' => $request->allFiles(),
+    //         'content_type' => $request->header('Content-Type'),
+    //     ]);
+
+    //     // Check if file exists before validation
+    //     if (!$request->hasFile('excel_file')) {
+    //         Log::error('No file uploaded');
+    //         return redirect()->back()->with('error', 'No file uploaded');
+    //     }
+
+    //     $file = $request->file('excel_file');
+    //     Log::info('File details', [
+    //         'original_name' => $file->getClientOriginalName(),
+    //         'mime_type' => $file->getMimeType(),
+    //         'size' => $file->getSize(),
+    //         'extension' => $file->getClientOriginalExtension(),
+    //     ]);
+
+    //     $request->validate([
+    //         'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:2048',
+    //     ]);
+
+    //     try {
+    //         $import = new CategoryImport();
+
+    //         Excel::import($import, $request->file('excel_file'));
+
+    //         $importedCount = $import->getImportedCount();
+    //         $errors = $import->getErrors();
+
+    //         $message = "Successfully imported {$importedCount} categories.";
+
+    //         if (!empty($errors)) {
+    //             $message .= " Errors: " . implode(', ', $errors);
+    //         }
+
+    //         return redirect()->back()->with('success', $message);
+
+    //     } catch (\Exception $e) {
+    //         Log::error('Category import failed: ' . $e->getMessage());
+    //         return redirect()->back()->with('error', 'Import failed: ' . $e->getMessage());
+    //     }
+    // }
 
 }
 

@@ -1,0 +1,9 @@
+# This is a placeholder for the Excel template file
+# The actual file should be created with proper Excel format containing:
+# - name column
+# - image column (with local file paths)
+#
+# Example format:
+# name | image
+# Product 1 | C:\Users\YourName\Pictures\product1.jpg
+# Product 2 | C:\Users\YourName\Pictures\product2.png

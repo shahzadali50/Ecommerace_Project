@@ -247,21 +247,12 @@ const openImagePreview = (imagePath: string) => {
 };
 
 const handleImportData = () => {
-    if (!importForm.excel_file) {
-        console.log('No file selected');
-        return;
-    }
-
-    console.log('File selected:', importForm.excel_file);
-    console.log('File name:', importForm.excel_file.name);
-    console.log('File type:', importForm.excel_file.type);
-    console.log('File size:', importForm.excel_file.size);
 
     isImporting.value = true;
 
     // Create FormData manually
     const formData = new FormData();
-    formData.append('excel_file', importForm.excel_file);
+    formData.append('file', importForm.excel_file as unknown as File);
 
     // Use router.post with FormData
     router.post(route('admin.import.data'), formData, {

@@ -33,7 +33,7 @@ Route::middleware(['auth', 'admin', 'verified'])->name('admin.')->group(function
     Route::get('admin/dashboard', [MainController::class, 'dashboard'])->name('dashboard');
     Route::get('categories', [CategoryController::class, 'index'])->name('categories');
     Route::post('category/store', [CategoryController::class, 'store'])->name('category.store');
-    Route::post('category/import', [CategoryController::class, 'import'])->name('import.data');
+    Route::post('import/data', [CategoryController::class, 'import'])->name('import.data');
     Route::put('category/update/{id}', [CategoryController::class, 'update'])->name('category.update');
     Route::delete('category/delete/{id}', [CategoryController::class, 'destroy'])->name('category.delete');
     Route::get('category/log', [CategoryController::class, 'category_log'])->name('category.log');
