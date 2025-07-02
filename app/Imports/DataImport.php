@@ -3,9 +3,10 @@
 namespace App\Imports;
 
 use App\Models\ImportData;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Illuminate\Support\Facades\File;
 
 
 
@@ -18,24 +19,31 @@ class DataImport implements ToModel,WithHeadingRow
     */
     public function model(array $row)
     {
-        $localPath = $row['image']; // Local absolute path from Excel
-        $newName = basename($localPath); // Get filename only (e.g., shahzad.jpeg)
-        $uploadDir = public_path('uploads');
-        $publicPath = $uploadDir . '/' . $newName;
+        $localPath = $row['image']; // e.g., C:\Users\you\Pictures\img.jpg
+        $newName = basename($localPath); // shahzad.jpeg
 
-        // Ensure the uploads directory exists
-        if (!File::exists($uploadDir)) {
-            File::makeDirectory($uploadDir, 0755, true);
-        }
+        // Target path inside 'storage/app/public/products/thumbnails'
+        $storagePath = 'imports';
 
-        // Copy the file if it exists at the source
         if (File::exists($localPath)) {
-            File::copy($localPath, $publicPath);
+            // Ensure the directory exists
+            Storage::disk('public')->makeDirectory($storagePath);
+
+            // Put file into storage/app/public/products/thumbnails
+            Storage::disk('public')->putFileAs(
+                $storagePath,
+                new \Illuminate\Http\File($localPath),
+                $newName
+            );
+
+            $finalPath = $storagePath . '/' . $newName; // For DB storage
+        } else {
+            $finalPath = null;
         }
 
         return new ImportData([
             'name'  => $row['name'],
-            'image' => 'uploads/' . $newName,
+            'image' => $finalPath,
         ]);
     }
 
