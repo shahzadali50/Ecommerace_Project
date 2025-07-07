@@ -6,6 +6,7 @@ use Inertia\Middleware;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Facades\Auth;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -49,8 +50,8 @@ class HandleInertiaRequests extends Middleware
             'translations' => __('messages'), // ✅ will now be globally available
             'currentLocale' => app()->getLocale(),
              // ✅ Share wishlist globally
-        'wishlist' => fn () => auth()->check()
-            ? Wishlist::where('user_id', auth()->id())->pluck('product_id')
+            'wishlist' => fn () => Auth::check()
+            ? Wishlist::where('user_id', Auth::id())->pluck('product_id')
             : [],
 
 

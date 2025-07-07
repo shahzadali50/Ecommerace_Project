@@ -133,6 +133,7 @@ class MainController extends Controller
     }
 
 
+
     public function switchLanguage($locale)
     {
         if (in_array($locale, ['en', 'pt', 'ja'])) {
