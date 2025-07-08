@@ -16,7 +16,8 @@ class SetLocale
     public function handle(Request $request, Closure $next): Response
     {
         $locale = session('locale', config('app.locale'));
-        if (in_array($locale, ['en','pt', 'ja'])) {
+        // if (in_array($locale, ['en','pt', 'ja'])) {
+            if (in_array($locale, ['en', 'es', 'it', 'fr', 'de', 'ar', 'hi', 'ur'])) {
             app()->setLocale($locale);
         }
 

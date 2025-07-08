@@ -9,10 +9,12 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\TranslationTestController;
 
 Route::get('/', [MainController::class, 'index'])->name('home');
 Route::get('product/{slug}', [MainController::class, 'productDetail'])->name('product.detail');
-Route::get('lang/{locale}', [MainController::class, 'switchLanguage'])->name('language.switch');
+// Route::get('lang/{locale}', [TranslationTestController::class, 'switchLanguage'])->name('language.switch');
+Route::post('lang/switch', [TranslationTestController::class, 'switchLanguage'])->name('language.switch');
 Route::post('cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 Route::post('cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
 Route::get('wishlist', [CartController::class, 'wishlist'])->name('wishlist');
@@ -28,6 +30,8 @@ Route::get('/payment/cancel', [StripeController::class, 'paymentCancel'])->name(
 Route::get('/payment/success', [StripeController::class, 'paymentSuccess'])->name('stripe.success');
 Route::get('/products/search', [ProductController::class, 'productSearch'])->name('products.search');
 
+Route::get('/translation-test', [TranslationTestController::class, 'index'])->name('translation.test');
+Route::post('/translate', [TranslationTestController::class, 'translate'])->name('translate');
 Route::middleware(['auth', 'admin', 'verified'])->name('admin.')->group(function () {
     Route::get('cache-clear', [MainController::class, 'cacheClear'])->name('cache.clear');
     Route::get('admin/dashboard', [MainController::class, 'dashboard'])->name('dashboard');

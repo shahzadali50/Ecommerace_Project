@@ -47,6 +47,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'csrf_token' => csrf_token(),
             'translations' => __('messages'), // ✅ will now be globally available
             'currentLocale' => app()->getLocale(),
              // ✅ Share wishlist globally
