@@ -4,10 +4,14 @@ import {
 } from 'ant-design-vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { getCurrentInstance, } from 'vue';
+
 const page = usePage();
 const translations = computed(() => {
     return (page.props.translations as any)?.banner || {};
 });
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 </script>
 
 <template>
@@ -25,6 +29,8 @@ const translations = computed(() => {
 
                     <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold  text-primary">
                         {{ translations.title || 'Welcome to LaCuna Marketplace' }}
+                        {{ t('Choose your preferred language') }}:
+
                     </h1>
                     <p class="text-lg sm:text-xl text-blue-800/80">
                          {{ translations.subtitle || 'A global marketplace connecting cultures, services, and innovation.' }}
