@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import { getCurrentInstance, ref, watch } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import UserLayout from '@/layouts/UserLayout.vue';
-import { ref, watch } from 'vue';
-import { useTranslator } from '@/composables/useTranslator';
 
 const props = defineProps<{
   locale: string;
@@ -22,22 +21,23 @@ const available_languages = [
 
 const selectedLanguage = ref(props.locale);
 
-const { t } = useTranslator(selectedLanguage.value);
+// 👇 get access to global $t
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
-watch(selectedLanguage, (newLang) => {
-  // optional: api call
-});
+// Optional: watch lang changes
+// watch(selectedLanguage, (newLang) => {
+//   // here you can trigger locale change if needed
+// });
 </script>
 
 <template>
   <UserLayout>
     <Head title="Translation Test" />
-
     <section class="py-14">
       <div class="container mx-auto px-4">
         <div class="flex flex-col">
           <div class="w-full">
-            <!-- Success Message -->
             <div
               v-if="props.flash?.success"
               class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 flex justify-between items-center"
@@ -53,7 +53,6 @@ watch(selectedLanguage, (newLang) => {
               </button>
             </div>
 
-            <!-- Error Message -->
             <div
               v-if="props.flash?.error"
               class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4"
@@ -61,12 +60,10 @@ watch(selectedLanguage, (newLang) => {
               {{ props.flash.error }}
             </div>
 
-            <!-- Current Language Display -->
             <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4">
               <strong>{{ t('Current Language') }}:</strong> {{ props.locale }}
             </div>
 
-            <!-- Language Selection Form -->
             <div class="bg-white shadow-md rounded-lg">
               <div class="bg-gray-100 px-4 py-3 rounded-t-lg">
                 <h5 class="text-lg font-semibold">{{ t('Select Language') }}</h5>
@@ -76,26 +73,26 @@ watch(selectedLanguage, (newLang) => {
                   <input type="hidden" name="_token" :value="$page.props.csrf_token" />
                   <div class="mb-4">
                     <label
-                        for="language"
-                        class="block text-sm font-medium text-gray-700"
+                      for="language"
+                      class="block text-sm font-medium text-gray-700"
                     >
-                        {{ t('Choose your preferred language') }}:
+                      {{ t('Choose your preferred language') }}:
                     </label>
                     <select
-                        name="language"
-                        id="language"
-                        v-model="selectedLanguage"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                      name="language"
+                      id="language"
+                      v-model="selectedLanguage"
+                      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     >
-                        <option
+                      <option
                         v-for="lang in available_languages"
                         :key="lang.code"
                         :value="lang.code"
-                        >
+                      >
                         {{ lang.name }}
-                        </option>
+                      </option>
                     </select>
-                    </div>
+                  </div>
 
                   <button
                     type="submit"
@@ -107,7 +104,6 @@ watch(selectedLanguage, (newLang) => {
               </div>
             </div>
 
-            <!-- Example Content Section -->
             <div class="mt-6">
               <div class="bg-white shadow-md rounded-lg">
                 <div class="bg-gray-100 px-4 py-3 rounded-t-lg">
@@ -137,13 +133,10 @@ watch(selectedLanguage, (newLang) => {
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
     </section>
   </UserLayout>
 </template>
-
-<style scoped>
-/* Tailwind CSS is used via utility classes */
-</style>

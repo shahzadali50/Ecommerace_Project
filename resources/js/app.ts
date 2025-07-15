@@ -8,6 +8,8 @@ import { ZiggyVue } from 'ziggy-js';
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
 import { initializeTheme } from './composables/useAppearance';
+import translator from '@/plugins/translator';
+
 
 declare module 'vite/client' {
     interface ImportMetaEnv {
@@ -25,18 +27,25 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
+    resolve: (name) =>
+        resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        const app = createApp({ render: () => h(App, props) });
+
+        const locale = props.initialPage.props.locale || 'en';
+
+        app
             .use(plugin)
             .use(ZiggyVue)
             .use(Antd)
+            .use(translator, locale)
             .mount(el);
     },
     progress: {
         color: '#4B5563',
     },
 });
+
 
 initializeTheme();
 document.documentElement.classList.remove('dark');
