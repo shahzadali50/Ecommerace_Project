@@ -14,8 +14,10 @@ class TranslationTestController extends Controller
         if (!in_array($locale, ['en', 'es', 'it', 'fr', 'de', 'ar', 'hi', 'ur'])) {
             return redirect()->back()->with('error', 'Invalid language selected.');
         }
+
         session(['locale' => $locale]);
         app()->setLocale($locale);
+
         return redirect()->back()->with('success', 'Language set to: ' . $locale);
     }
 
@@ -37,6 +39,7 @@ class TranslationTestController extends Controller
             ],
         ]);
     }
+
     public function translate(Request $request)
     {
         $request->validate([
@@ -48,28 +51,43 @@ class TranslationTestController extends Controller
         $texts = $request->input('texts');
         $targetLanguage = $request->input('target');
 
-        // If target is English or empty, just return as-is
         if ($targetLanguage === 'en' || empty($targetLanguage)) {
-            $result = collect($texts)->mapWithKeys(fn($text) => [$text => $text])->toArray();
-            return response()->json(['translations' => $result]);
+            return response()->json([
+                'translations' => collect($texts)->mapWithKeys(fn($t) => [$t => $t])->toArray()
+            ]);
         }
 
-        try {
-            $tr = new \Stichoza\GoogleTranslate\GoogleTranslate();
-            $tr->setSource('en');
-            $tr->setTarget($targetLanguage);
+        $result = [];
+        $toTranslate = [];
 
-            $result = [];
-            foreach ($texts as $text) {
-                $result[$text] = $tr->translate($text);
+        foreach ($texts as $text) {
+            $cached = \Cache::get("translation:{$targetLanguage}:" . md5($text));
+            if ($cached) {
+                $result[$text] = $cached;
+            } else {
+                $toTranslate[] = $text;
             }
-
-            return response()->json(['translations' => $result]);
-        } catch (\Exception $e) {
-            \Log::error('Translation error: ' . $e->getMessage());
-            $fallback = collect($texts)->mapWithKeys(fn($text) => [$text => $text])->toArray();
-            return response()->json(['translations' => $fallback], 500);
         }
-    }
 
+        if (!empty($toTranslate)) {
+            try {
+                $tr = new GoogleTranslate();
+                $tr->setSource('en')->setTarget($targetLanguage);
+
+                foreach ($toTranslate as $text) {
+                    $translation = $tr->translate($text);
+                    $result[$text] = $translation;
+                    \Cache::put("translation:{$targetLanguage}:" . md5($text), $translation, now()->addHours(24));
+                }
+            } catch (\Exception $e) {
+                \Log::error('Translation error: ' . $e->getMessage());
+                foreach ($toTranslate as $text) {
+                    $result[$text] = $text;
+                }
+                return response()->json(['translations' => $result], 500);
+            }
+        }
+
+        return response()->json(['translations' => $result]);
+    }
 }
