@@ -6,16 +6,26 @@ import { useTranslator } from '@/composables/useTranslator';
 
 const props = defineProps<{
   locale: string;
-  available_languages: { code: string; name: string }[];
   flash?: { success?: string; error?: string };
 }>();
+
+const available_languages = [
+  { code: 'en', name: 'English' },
+  { code: 'es', name: 'Spanish' },
+  { code: 'it', name: 'Italian' },
+  { code: 'fr', name: 'French' },
+  { code: 'de', name: 'German' },
+  { code: 'ar', name: 'Arabic' },
+  { code: 'hi', name: 'Hindi' },
+  { code: 'ur', name: 'Urdu' },
+];
 
 const selectedLanguage = ref(props.locale);
 
 const { t } = useTranslator(selectedLanguage.value);
 
-watch(selectedLanguage, newLang => {
-  // Optionally: make an API call to persist language change
+watch(selectedLanguage, (newLang) => {
+  // optional: api call
 });
 </script>
 
@@ -66,29 +76,27 @@ watch(selectedLanguage, newLang => {
                   <input type="hidden" name="_token" :value="$page.props.csrf_token" />
                   <div class="mb-4">
                     <label
-                      for="language"
-                      class="block text-sm font-medium text-gray-700"
+                        for="language"
+                        class="block text-sm font-medium text-gray-700"
                     >
-                      {{ t('Choose your preferred language') }}:
+                        {{ t('Choose your preferred language') }}:
                     </label>
                     <select
-                      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      id="language"
-                      name="language"
-                      v-model="selectedLanguage"
-                      required
+                        name="language"
+                        id="language"
+                        v-model="selectedLanguage"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     >
-                      <option value="">{{ t('Choose your preferred language') }}</option>
-                      <option
-                        v-for="lang in props.available_languages"
+                        <option
+                        v-for="lang in available_languages"
                         :key="lang.code"
                         :value="lang.code"
-                        :selected="lang.code === props.locale"
-                      >
+                        >
                         {{ lang.name }}
-                      </option>
+                        </option>
                     </select>
-                  </div>
+                    </div>
+
                   <button
                     type="submit"
                     class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"

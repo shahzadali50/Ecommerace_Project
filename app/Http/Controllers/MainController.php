@@ -23,6 +23,7 @@ class MainController extends Controller
     {
         try {
             $locale = session('locale', App::getLocale());
+            
             // Load categories with product count and translations
             $categories = Category::withCount('products')
                 ->with([

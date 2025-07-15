@@ -27,16 +27,6 @@ class TranslationTestController extends Controller
 
         return Inertia::render('frontend/TranslationTest', [
             'locale' => $locale,
-            'available_languages' => [
-                ['code' => 'en', 'name' => 'English'],
-                ['code' => 'es', 'name' => 'Spanish'],
-                ['code' => 'it', 'name' => 'Italian'],
-                ['code' => 'fr', 'name' => 'French'],
-                ['code' => 'de', 'name' => 'German'],
-                ['code' => 'ar', 'name' => 'Arabic'],
-                ['code' => 'hi', 'name' => 'Hindi'],
-                ['code' => 'ur', 'name' => 'Urdu'],
-            ],
         ]);
     }
 
