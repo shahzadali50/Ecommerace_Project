@@ -37,30 +37,39 @@ class TranslationTestController extends Controller
             ],
         ]);
     }
-
     public function translate(Request $request)
     {
         $request->validate([
-            'text' => 'required|string',
+            'texts' => 'required|array',
+            'texts.*' => 'required|string',
             'target' => 'required|string|in:en,es,it,fr,de,ar,hi,ur',
         ]);
 
-        $text = $request->input('text');
+        $texts = $request->input('texts');
         $targetLanguage = $request->input('target');
 
+        // If target is English or empty, just return as-is
         if ($targetLanguage === 'en' || empty($targetLanguage)) {
-            return response()->json(['translated' => $text]);
+            $result = collect($texts)->mapWithKeys(fn($text) => [$text => $text])->toArray();
+            return response()->json(['translations' => $result]);
         }
 
         try {
-            $tr = new GoogleTranslate();
+            $tr = new \Stichoza\GoogleTranslate\GoogleTranslate();
             $tr->setSource('en');
             $tr->setTarget($targetLanguage);
-            $translatedText = $tr->translate($text);
-            return response()->json(['translated' => $translatedText]);
+
+            $result = [];
+            foreach ($texts as $text) {
+                $result[$text] = $tr->translate($text);
+            }
+
+            return response()->json(['translations' => $result]);
         } catch (\Exception $e) {
             \Log::error('Translation error: ' . $e->getMessage());
-            return response()->json(['translated' => $text], 500);
+            $fallback = collect($texts)->mapWithKeys(fn($text) => [$text => $text])->toArray();
+            return response()->json(['translations' => $fallback], 500);
         }
     }
+
 }
