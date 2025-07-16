@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, defineProps } from 'vue';
+import { ref, computed, defineProps, getCurrentInstance } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { ShoppingCartOutlined, HeartOutlined } from '@ant-design/icons-vue';
 import { Row, Col, Card, Button, Skeleton } from 'ant-design-vue';
@@ -41,10 +41,8 @@ const props = defineProps<{
     sectionClass?: string;
 }>();
 const page = usePage();
-
-const translations = computed(() => {
-    return (page.props.translations as any)?.products || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 // Products
 const products = computed<Product[]>(() => (page.props.products as any)?.data || []);
@@ -122,17 +120,17 @@ const isInWishlist = (productId: number) => {
         <div class="container  mx-auto">
             <FilterProduct v-if="props.showFilter === true" :categories="page.props.categories"
                 :selectedCategory="page.props.selectedCategory" :brands="page.props.brands"
-                :selectedBrand="page.props.selectedBrand" :translations="translations" />
+                :selectedBrand="page.props.selectedBrand" />
         </div>
     </section>
     <section :class="['', props.sectionClass]">
         <div class="container mx-auto px-2 sm:px-4">
             <div class="text-center mb-8 sm:mb-12">
                 <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4" v-if="props.showTitle !== false">
-                    {{ props.title || translations.title || 'Product List' }}
+                    {{ props.title || t('Product List') }}
                 </h2>
                 <p class="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto" v-if="props.showSubTitle !== false">
-                    {{ props.subtitle || translations.subtitle || 'Explore our wide range of high-quality products tailored to your needs.' }}
+                    {{ props.subtitle || t('Explore our wide range of high-quality products tailored to your needs.') }}
                 </p>
             </div>
 
@@ -153,7 +151,7 @@ const isInWishlist = (productId: number) => {
                                 </template>
                                 <div
                                     class="absolute top-1 right-1 bg-white rounded-full px-1.5 py-0.5 text-[10px] sm:text-xs font-medium text-gray-800">
-                                    {{ product.category_name }}
+                                    {{ t(product.category_name) }}
                                 </div>
                               <Button
                                 @click.stop="addToWhishlist(product.id)"
@@ -175,7 +173,7 @@ const isInWishlist = (productId: number) => {
                         </template>
                         <div>
                             <h3 class="text-[15px] sm:text-xl font-semibold text-gray-900 mb-1">
-                                {{ product.name }}
+                                {{ t('product.name') }}
                             </h3>
                             <div class="flex justify-between items-center">
                                 <div class="flex flex-wrap">
@@ -198,7 +196,7 @@ const isInWishlist = (productId: number) => {
                                 <template #icon>
                                     <ShoppingCartOutlined />
                                 </template>
-                                {{ product.stock === 0 ? (translations.out_of_stock || 'Out of Stock') : (translations.add_to_cart || 'Add to Cart') }}
+                                {{ product.stock === 0 ? t('Out of Stock') : t('Add to Cart') }}
                             </Button>
                         </div>
                     </Card>
@@ -213,7 +211,7 @@ const isInWishlist = (productId: number) => {
                 <div v-if="props.showAllProductsButton === true" class="text-center mt-8 sm:mt-12">
                     <Button size="large" class="btn-primary" aria-label="View all products">
                         <Link :href="route('all.products')">
-                        {{ translations.all_products || 'All Products' }}<i class="fa fa-long-arrow-right ml-2"
+                        {{ t('All Products') }}<i class="fa fa-long-arrow-right ml-2"
                             aria-hidden="true"></i>
                         </Link>
                     </Button>
@@ -221,11 +219,11 @@ const isInWishlist = (productId: number) => {
             </div>
 
             <div v-else>
-                <a-result status="404" title="404" sub-title="We couldn't find any products matching your search.">
+                <a-result status="404" title="404" :sub-title="t('We couldn\'t find any products matching your search.')">
                     <template #extra>
                         <Button class="btn-primary" size="large" type="primary">
                             <Link :href="route('all.products')">
-                            Continue Shopping
+                            {{ t('Continue Shopping') }}
                             </Link>
                         </Button>
                     </template>

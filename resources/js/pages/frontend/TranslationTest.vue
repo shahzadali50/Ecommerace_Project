@@ -25,10 +25,7 @@ const selectedLanguage = ref(props.locale);
 const { appContext } = getCurrentInstance()!;
 const t = appContext.config.globalProperties.$t as (key: string) => string;
 
-// Optional: watch lang changes
-watch(selectedLanguage, (newLang) => {
-  // here you can trigger locale change if needed
-});
+
 </script>
 
 <template>

@@ -2,14 +2,8 @@
 import {
     Button
 } from 'ant-design-vue';
-import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
-import { getCurrentInstance, } from 'vue';
+import { getCurrentInstance } from 'vue';
 
-const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as any)?.banner || {};
-});
 const { appContext } = getCurrentInstance()!;
 const t = appContext.config.globalProperties.$t as (key: string) => string;
 </script>
@@ -28,17 +22,15 @@ const t = appContext.config.globalProperties.$t as (key: string) => string;
                 <a-col :xs="24" :md="12" class="order-2 md:order-1">
 
                     <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold  text-primary">
-                        {{ translations.title || 'Welcome to LaCuna Marketplace' }}
-                        {{ t('Choose your preferred language') }}:
-
+                        {{ t('Welcome to LaCuna Marketplace') }}
                     </h1>
                     <p class="text-lg sm:text-xl text-blue-800/80">
-                         {{ translations.subtitle || 'A global marketplace connecting cultures, services, and innovation.' }}
+                         {{ t('A global marketplace connecting cultures, services, and innovation.') }}
                     </p>
-                    <a :href="translations.cta_link || '#'" class="inline-block">
+                    <a href="#" class="inline-block">
                         <Button size="large"
                             class="btn-primary">
-                            {{ translations.cta_text || 'Start Exploring' }}
+                            {{ t('Start Exploring') }}
                         </Button>
                     </a>
                 </a-col>
