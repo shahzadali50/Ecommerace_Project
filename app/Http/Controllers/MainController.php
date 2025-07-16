@@ -79,10 +79,7 @@ class MainController extends Controller
             $locale = session('locale', App::getLocale());
 
             $product = Product::where('slug', $slug)
-                ->with([
-                    'category' => fn($q) => $q->with(['category_translations' => fn($q) => $q->where('lang', $locale)]),
-                    'product_translations' => fn($q) => $q->where('lang', $locale),
-                ])
+                ->with(['category'])
                 ->first();
 
             if (!$product) {
@@ -98,8 +95,8 @@ class MainController extends Controller
             return Inertia::render('frontend/products/ProductDetail', [
                 'product' => [
                     'id' => $product->id,
-                    'name' => $product->product_translations->first()?->name ?? $product->name,
-                    'description' =>  $product->product_translations->first()?->description ?? $product->description,
+                    'name' => $product->name,
+                    'description' => $product->description,
                     'slug' => $product->slug,
                     'final_price' => $product->final_price,
                     'sale_price' => $product->sale_price,
@@ -114,10 +111,9 @@ class MainController extends Controller
                                 : explode(',', $product->gallary_img)
                             )
                     )->map(fn($img) => asset("storage/" . trim($img)))->toArray(),
-                    'category_name' => $product->category?->category_translations->first()?->name ?? $product->category?->name ?? 'N/A',
+                    'category_name' => $product->category?->name ?? 'N/A',
                 ],
                 'wishlist' => $wishlist,
-                'translations' => __('messages'),
                 'locale' => $locale,
             ]);
         } catch (\Throwable $e) {

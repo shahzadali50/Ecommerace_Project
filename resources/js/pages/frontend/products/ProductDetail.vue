@@ -186,7 +186,7 @@ const addToCart = () => {
                     <!-- Product Info -->
                     <Col :xs="24" :lg="12">
                     <div class="h-full">
-                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{{ product.name }}</h1>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{{ t(product.name) }}</h1>
 
                         <!-- Price -->
                         <div class="mb-6">
