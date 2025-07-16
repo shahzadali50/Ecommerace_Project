@@ -47,7 +47,7 @@ class CartController extends Controller
                     }
 
                     $item['thumnail_img'] = $product->thumnail_img;
-                    $item['name'] = $product->product_translations->first()?->name ?? $product->name;
+                    $item['name'] = $product->name;
                     $item['purchase_price'] = $product->purchase_price;
                     $item['final_price'] = $product->final_price;
                     $item['discount'] = $product->discount;
@@ -65,7 +65,7 @@ class CartController extends Controller
 
                 $cart[] = [
                     'id' => $product->id,
-                    'name' => $product->product_translations->first()?->name ?? $product->name,
+                    'name' => $product->name,
                     'thumnail_img' => $product->thumnail_img,
                     'purchase_price' => $product->purchase_price,
                     'final_price' => $product->final_price,
@@ -177,7 +177,6 @@ public function addToWhishlist(Request $request)
         // session()->flash('success', 'Welcome to checkout page');
 
         return Inertia::render('frontend/cart/CartCheckout', [
-            'translations' => __('messages'),
             'locale' => App::getLocale(),
             // 'flash' => session()->only(['success']),
         ]);
@@ -190,7 +189,6 @@ public function addToWhishlist(Request $request)
         // session()->flash('success', 'Welcome to checkout page');
 
         return Inertia::render('frontend/cart/CartPayment', [
-            'translations' => __('messages'),
             'locale' => App::getLocale(),
             'stripe_key' => config('services.stripe.key'),
             // 'flash' => session()->only(['success']),
@@ -203,39 +201,30 @@ public function wishlist(Request $request)
         $page = $request->query('page', 1);
 
         if (Auth::check()) {
-            // User logged in — eager load wishlist products with translations and category
+            // User logged in — eager load wishlist products with category
             $query = Auth::user()->wishlist()
                 ->with([
-                    'product' => function ($q) use ($locale) {
-                        $q->where('status', 1)->with([
-                            'category' => function ($q) use ($locale) {
-                                $q->with(['category_translations' => function ($q) use ($locale) {
-                                    $q->where('lang', $locale);
-                                }]);
-                            },
-                            'product_translations' => function ($q) use ($locale) {
-                                $q->where('lang', $locale);
-                            },
-                        ]);
+                    'product' => function ($q) {
+                        $q->where('status', 1)->with('category');
                     }
                 ]);
 
             $wishlistProducts = $query->paginate(10, ['*'], 'page', $page);
 
             // Transform for frontend
-            $wishlistProducts->getCollection()->transform(function ($wishlistItem) use ($locale) {
+            $wishlistProducts->getCollection()->transform(function ($wishlistItem) {
                 $product = $wishlistItem->product;
                 if (!$product) {
                     return null;
                 }
                 return [
                     'id' => $product->id,
-                    'name' => $product->product_translations->first()?->name ?? $product->name,
+                    'name' => $product->name,
                     'slug' => $product->slug,
                     'thumnail_img' => $product->thumnail_img,
                     'sale_price' => (float) $product->sale_price,
                     'final_price' => (float) $product->final_price,
-                    'category_name' => $product->category?->category_translations->first()?->name ?? $product->category?->name ?? 'N/A',
+                    'category_name' => $product->category?->name ?? 'N/A',
                 ];
             })->filter()->values();
 
@@ -251,7 +240,6 @@ public function wishlist(Request $request)
         return Inertia::render('frontend/WishlistProduct', [
             'products' => $wishlistProducts,
             'wishlist' => $wishlist,
-            'translations' => __('messages'),
             'locale' => $locale,
         ]);
     } catch (\Throwable $e) {
