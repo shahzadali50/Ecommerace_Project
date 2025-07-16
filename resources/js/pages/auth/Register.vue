@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 import UserLayout from '@/layouts/UserLayout.vue';
-import {computed } from 'vue';
-import { type SharedData } from '@/types';
+import { getCurrentInstance } from 'vue';
 
-const page = usePage<SharedData>();
-const translations = computed(() => page.props.translations as Record<string, string>);
+// 👇 get access to global $t
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const form = useForm({
     name: '',
@@ -30,25 +30,25 @@ const submit = () => {
 
 <template>
     <UserLayout>
-    <AuthBase :title="translations.create_account" :description="translations.enter_details">
-        <Head :title="translations.register" />
+    <AuthBase :title="t('Create Account')" :description="t('Enter your details to create your account')">
+        <Head :title="t('Register')" />
 
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="name">{{ translations.name }}</Label>
-                    <Input id="name" type="text" required autofocus :tabindex="1" autocomplete="name" v-model="form.name" :placeholder="translations.name_placeholder" />
+                    <Label for="name">{{ t('Name') }}</Label>
+                    <Input id="name" type="text" required autofocus :tabindex="1" autocomplete="name" v-model="form.name" :placeholder="t('Enter your full name')" />
                     <InputError :message="form.errors.name" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="email">{{ translations.email }}</Label>
-                    <Input id="email" type="email" required :tabindex="2" autocomplete="email" v-model="form.email" :placeholder="translations.email_placeholder" />
+                    <Label for="email">{{ t('Email') }}</Label>
+                    <Input id="email" type="email" required :tabindex="2" autocomplete="email" v-model="form.email" :placeholder="t('Enter your email address')" />
                     <InputError :message="form.errors.email" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password">{{ translations.password }}</Label>
+                    <Label for="password">{{ t('Password') }}</Label>
                     <Input
                         id="password"
                         type="password"
@@ -56,13 +56,13 @@ const submit = () => {
                         :tabindex="3"
                         autocomplete="new-password"
                         v-model="form.password"
-                        :placeholder="translations.password_placeholder"
+                        :placeholder="t('Enter your password')"
                     />
                     <InputError :message="form.errors.password" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation">{{ translations.confirm_password }}</Label>
+                    <Label for="password_confirmation">{{ t('Confirm Password') }}</Label>
                     <Input
                         id="password_confirmation"
                         type="password"
@@ -70,20 +70,20 @@ const submit = () => {
                         :tabindex="4"
                         autocomplete="new-password"
                         v-model="form.password_confirmation"
-                        :placeholder="translations.confirm_password_placeholder"
+                        :placeholder="t('Confirm your password')"
                     />
                     <InputError :message="form.errors.password_confirmation" />
                 </div>
 
                 <Button type="submit" class="mt-2 w-full" tabindex="5" :disabled="form.processing">
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                    {{ translations.create_account }}
+                    {{ t('Create Account') }}
                 </Button>
             </div>
 
             <div class="text-center text-sm text-muted-foreground">
-                {{ translations.have_account }}
-                <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">{{ translations.login }}</TextLink>
+                {{ t('Already have an account?') }}
+                <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">{{ t('Login') }}</TextLink>
             </div>
         </form>
     </AuthBase>

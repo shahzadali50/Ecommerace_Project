@@ -17,10 +17,10 @@ class PasswordResetLinkController extends Controller
      */
     public function create(Request $request): Response
     {
+        $locale = session('locale', App::getLocale());
         return Inertia::render('auth/ForgotPassword', [
             'status' => $request->session()->get('status'),
-            'translations' => __('auth'),
-            'currentLocale' => App::getLocale(),
+            'locale' => $locale,
         ]);
     }
 

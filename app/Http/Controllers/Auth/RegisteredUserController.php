@@ -21,9 +21,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
+        $locale = session('locale', App::getLocale());
         return Inertia::render('auth/Register', [
-            'translations' => __('auth'),
-            'currentLocale' => App::getLocale(),
+            'locale' => $locale,
         ]);
     }
 
