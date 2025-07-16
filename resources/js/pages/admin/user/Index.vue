@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import { Head, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-dt';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import dayjs from "dayjs";
+import { getCurrentInstance } from 'vue';
 
 DataTable.use(DataTablesCore);
 
@@ -17,11 +18,9 @@ defineProps<{
 // State Management
 const isLoading = ref(false);
 
-// Page and Translations
-const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as any)?.dashboard_all_pages || {};
-});
+// Global translation function
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 // Format date
 const formatDate = (date: string) => {
@@ -31,14 +30,14 @@ const formatDate = (date: string) => {
 // DataTable columns for users
 const dataTableColumns = [
     {
-        title: translations.value.sr || 'Sr.',
+        title: t('Sr.'),
         data: null,
         render: (data: any, type: any, row: any, meta: any) => meta.row + 1,
     },
-    { title: translations.value.name || 'Name', data: 'name' },
-    { title: translations.value.email || 'Email', data: 'email' },
+    { title: t('Name'), data: 'name' },
+    { title: t('Email'), data: 'email' },
     {
-        title: translations.value.created_at || 'Created At',
+        title: t('Created At'),
         data: 'created_at',
         render: (data: string) => formatDate(data),
     },
@@ -59,12 +58,12 @@ const options = {
         <a-spin size="large" />
     </div>
     <AdminLayout>
-        <Head :title="translations.user_list || 'User List'" />
+        <Head :title="t('User List')" />
         <a-row>
             <a-col :span="24">
                 <div class="bg-white rounded-lg p-4 shadow-md responsive-table">
                     <div class="mb-4 flex items-center justify-between">
-                        <h2 class="text-lg font-semibold">{{ translations.user_list || 'User List' }}</h2>
+                        <h2 class="text-lg font-semibold">{{ t('User List') }}</h2>
                     </div>
                     <DataTable
                         v-if="users?.data"
@@ -75,10 +74,10 @@ const options = {
                     >
                         <thead>
                             <tr>
-                                <th>{{ translations.sr || 'Sr.' }}</th>
-                                <th>{{ translations.name || 'Name' }}</th>
-                                <th>{{ translations.email || 'Email' }}</th>
-                                <th>{{ translations.created_at || 'Created At' }}</th>
+                                <th>{{ t('Sr.') }}</th>
+                                <th>{{ t('Name') }}</th>
+                                <th>{{ t('Email') }}</th>
+                                <th>{{ t('Created At') }}</th>
                             </tr>
                         </thead>
                         <tbody>

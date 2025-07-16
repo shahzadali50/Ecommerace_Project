@@ -4,7 +4,7 @@ import { FilterOutlined, DollarCircleOutlined } from '@ant-design/icons-vue';
 import DashboardCard from '@/components/admin/DashboardCard.vue';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
-import { usePage } from '@inertiajs/vue3';
+import { getCurrentInstance } from 'vue';
 
 interface Order {
     id: number;
@@ -16,23 +16,8 @@ interface Props {
     orders: Order[];
 }
 
-interface Translations {
-    dashboardMainPage?: {
-        sales?: string;
-        todays_sale?: string;
-        weekly_sale?: string;
-        monthly_sale?: string;
-        sale_filter_by_date?: string;
-        start_date?: string;
-        end_date?: string;
-        filtered_revenue?: string;
-    };
-}
-
-const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as Translations)?.dashboardMainPage || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 dayjs.extend(isBetween);
 
@@ -102,11 +87,11 @@ const filteredRevenue = computed(() => {
     <div style="background-color: #ececec; padding: 20px">
         <a-row :gutter="[16, 16]">
             <a-col :xs="24">
-                <h2 class="text-2xl">{{ translations.sales || 'Sales' }}</h2>
+                <h2 class="text-2xl">{{ t('Sales') }}</h2>
             </a-col>
             <a-col :lg="6" :sm="12" :xs="24">
                 <DashboardCard
-                    :title="translations.todays_sale || 'Today\'s Sale'"
+                    :title="t('Today\'s Sale')"
                     :value="todaySales"
                     :icon="DollarCircleOutlined"
                     bgColor="bg-cyan-600"
@@ -114,7 +99,7 @@ const filteredRevenue = computed(() => {
             </a-col>
             <a-col :lg="6" :sm="12" :xs="24">
                 <DashboardCard
-                    :title="translations.weekly_sale || 'Weekly Sale'"
+                    :title="t('Weekly Sale')"
                     :value="weeklySales"
                     :icon="DollarCircleOutlined"
                     bgColor="bg-cyan-600"
@@ -122,7 +107,7 @@ const filteredRevenue = computed(() => {
             </a-col>
             <a-col :lg="6" :sm="12" :xs="24">
                 <DashboardCard
-                    :title="translations.monthly_sale || 'Monthly Sale'"
+                    :title="t('Monthly Sale')"
                     :value="monthlySales"
                     :icon="DollarCircleOutlined"
                     bgColor="bg-cyan-600"
@@ -130,23 +115,23 @@ const filteredRevenue = computed(() => {
             </a-col>
 
             <a-col :xs="24">
-                <h5>{{ translations.sale_filter_by_date || 'Sale Filter By Date' }}</h5>
+                <h5>{{ t('Sale Filter By Date') }}</h5>
                 <div class="flex">
                     <a-date-picker
                         class="mx-1"
                         v-model:value="filters.start_date"
-                        :placeholder="translations.start_date || 'Start Date'"
+                        :placeholder="t('Start Date')"
                     />
                     <a-date-picker
                         class="mx-1"
                         v-model:value="filters.end_date"
-                        :placeholder="translations.end_date || 'End Date'"
+                        :placeholder="t('End Date')"
                     />
                 </div>
             </a-col>
             <a-col :lg="6" :xs="24">
                 <DashboardCard
-                    :title="translations.filtered_revenue || 'Filtered Revenue'"
+                    :title="t('Filtered Revenue')"
                     :value="filteredRevenue"
                     :icon="FilterOutlined"
                     bgColor="bg-slate-600"

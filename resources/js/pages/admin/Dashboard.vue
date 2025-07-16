@@ -7,8 +7,7 @@ import DashboardCard from '@/components/admin/DashboardCard.vue';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import OrderManagement from '@/components/admin/OrderManagement.vue';
-import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { getCurrentInstance, computed } from 'vue';
 
 dayjs.extend(isBetween);
 
@@ -31,22 +30,8 @@ const props = withDefaults(defineProps<Props>(), {
     orders: () => [],
 });
 
-interface Translations {
-    dashboardMainPage?: {
-        welcome_to_dashboard?: string;
-        latest_products?: string;
-        total_sale?: string;
-        total_orders?: string;
-        brands?: string;
-        products?: string;
-        stock?: string;
-    };
-}
-
-const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as Translations)?.dashboardMainPage || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const totalSales = computed(() => {
     return props.orders.reduce((sum: number, order: Order) => sum + Number(order.total_price), 0);
@@ -61,11 +46,11 @@ const totalOrders = computed(() => props.orders.length);
         <div class="mb-5" style="background-color: #ececec; padding: 20px">
             <a-row :gutter="[16, 16]">
                 <a-col :lg="24" :md="24" :sm="24" :xs="24">
-                    <h2 class="text-2xl">{{ translations.welcome_to_dashboard || 'Welcome to Dashboard' }}</h2>
+                    <h2 class="text-2xl">{{ t('Welcome to Dashboard') }}</h2>
                 </a-col>
                 <a-col :lg="6" :sm="12" :xs="24">
                     <DashboardCard
-                        :title="translations.total_sale || 'Total Sale'"
+                        :title="t('Total Sale')"
                         :value="totalSales"
                         :icon="DollarCircleOutlined"
                         bgColor="bg-yellow-800"
@@ -73,7 +58,7 @@ const totalOrders = computed(() => props.orders.length);
                 </a-col>
                 <a-col :lg="6" :sm="12" :xs="24">
                     <DashboardCard
-                        :title="translations.total_orders || 'Total Orders'"
+                        :title="t('Total Orders')"
                         :value="totalOrders"
                         :icon="ShoppingCartOutlined"
                         bgColor="bg-green-700"
@@ -81,7 +66,7 @@ const totalOrders = computed(() => props.orders.length);
                 </a-col>
                 <a-col :lg="6" :sm="12" :xs="24">
                     <DashboardCard
-                        :title="translations.brands || 'Brands'"
+                        :title="t('Brands')"
                         :value="props.brands"
                         :icon="BranchesOutlined"
                         bgColor="bg-sky-900"
@@ -89,7 +74,7 @@ const totalOrders = computed(() => props.orders.length);
                 </a-col>
                 <a-col :lg="6" :sm="12" :xs="24">
                     <DashboardCard
-                        :title="translations.products || 'Products'"
+                        :title="t('Products')"
                         :value="props.totalProduct"
                         :icon="CiOutlined"
                         bgColor="bg-red-700"
