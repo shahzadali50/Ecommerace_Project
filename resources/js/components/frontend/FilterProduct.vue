@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { defineProps, getCurrentInstance } from 'vue';
 import { router, Link } from '@inertiajs/vue3';
 import { Button, Collapse, CollapsePanel, Checkbox } from 'ant-design-vue';
 import { ClearOutlined, FilterOutlined } from '@ant-design/icons-vue';
@@ -18,6 +18,9 @@ interface Brand {
     slug: string;
     product_count: number;
 }
+
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const props = defineProps<{
     categories?: Category[];
@@ -116,53 +119,53 @@ onUnmounted(() => {
         <div class="flex item-center">
 
             <Button type="text" class="flex items-center" size="large" @click="openFilterDrawer">
-                <FilterOutlined />Filter
+                <FilterOutlined />{{ t('Filter') }}
             </Button>
             <Button size="large" type="text">
                 <Link :href="route('all.products')" class="flex items-center">
-                <ClearOutlined />Clear Filters
+                <ClearOutlined />{{ t('Clear Filters') }}
                 </Link>
             </Button>
         </div>
-        <a-drawer title="Filter Products" placement="left" :open="isFilterDrawerVisible" @close="closeFilterDrawer"
+        <a-drawer :title="t('Filter Products')" placement="left" :open="isFilterDrawerVisible" @close="closeFilterDrawer"
             :width="drawerWidth">
             <div>
 
                 <div>
                     <div class="flex items-end gap-2 my-4">
                         <div class="">
-                            <label class="block text-xs mb-1">From</label>
+                            <label class="block text-xs mb-1">{{ t('From') }}</label>
                             <a-input type="number" placeholder="00000" min="0" v-model:value="minPrice" />
                         </div>
                         <div class="">
-                            <label class="block text-xs mb-1">To</label>
+                            <label class="block text-xs mb-1">{{ t('To') }}</label>
                             <a-input type="number" placeholder="2000" min="0" v-model:value="maxPrice" />
                         </div>
                         <div class="">
 
                             <Button type="dashed" @click="filterByPrice">
-                                <FilterOutlined /> Filter
+                                <FilterOutlined /> {{ t('Filter') }}
                             </Button>
                         </div>
                     </div>
                 </div>
                 <Collapse v-model:activeKey="activeKey" :bordered="false">
-                    <CollapsePanel key="1" header="Filter by Category">
+                    <CollapsePanel key="1" :header="t('Filter by Category')">
                         <div v-for="category in props.categories" :key="category.id"
                             class="flex justify-between items-center mb-2 cursor-pointer"
                             @click="filterByCategory(category.slug)">
                             <Checkbox :checked="props.selectedCategory === category.slug">
-                                {{ category.name }}
+                                {{ t(category.name) }}
                             </Checkbox>
                              <a-badge :count="category.product_count" :number-style="{ backgroundColor: '#757d87' }" />
                         </div>
                     </CollapsePanel>
-                    <CollapsePanel key="2" header="Filter by Brand">
+                    <CollapsePanel key="2" :header="t('Filter by Brand')">
                         <div v-for="brand in props.brands" :key="brand.id"
                             class="flex justify-between items-center mb-2 cursor-pointer"
                             @click="filterByBrand(brand.slug === props.selectedBrand ? null : brand.slug)">
                             <Checkbox :checked="props.selectedBrand === brand.slug">
-                                {{ brand.name }}
+                                {{ t(brand.name) }}
                             </Checkbox>
                               <a-badge :count=" brand.product_count" :number-style="{ backgroundColor: '#757d87' }" />
 

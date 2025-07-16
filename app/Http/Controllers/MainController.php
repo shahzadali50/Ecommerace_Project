@@ -225,46 +225,42 @@ public function allProducts(Request $request)
         $locale = session('locale', App::getLocale());
         $page = $request->query('page', 1);
         $categorySlug = $request->query('category');
-         $brandSlug = $request->query('brand');
+        $brandSlug = $request->query('brand');
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
 
         // Fetch categories with at least one product
         $categories = Category::withCount('products')
-            ->with(['category_translations' => fn($q) => $q->where('lang', $locale)])
             ->whereHas('products', function ($q) {
                 $q->where('status', 1);
             })
             ->get()
-            ->map(function ($category) use ($locale) {
+            ->map(function ($category) {
                 return [
                     'id' => $category->id,
-                    'name' => $category->category_translations->first()?->name ?? $category->name,
+                    'name' => $category->name,
                     'slug' => $category->slug,
                     'product_count' => $category->products_count,
                 ];
             });
+
         $brands = Brand::withCount('products')
-            ->with(['brand_translations' => fn($q) => $q->where('lang', $locale)])
             ->whereHas('products', function ($q) {
                 $q->where('status', 1);
             })
             ->get()
-            ->map(function ($brands ) use ($locale) {
+            ->map(function ($brand) {
                 return [
-                    'id' => $brands ->id,
-                    'name' => $brands ->brand_translations->first()?->name ?? $brands->name,
-                    'slug' => $brands ->slug,
-                    'product_count' => $brands ->products_count,
+                    'id' => $brand->id,
+                    'name' => $brand->name,
+                    'slug' => $brand->slug,
+                    'product_count' => $brand->products_count,
                 ];
             });
 
         // Fetch products with optional filters
         $query = Product::where('status', 1)
-            ->with([
-                'category' => fn($q) => $q->with(['category_translations' => fn($q) => $q->where('lang', $locale)]),
-                'product_translations' => fn($q) => $q->where('lang', $locale),
-            ]);
+            ->with(['category']);
 
         // Category filter
         if ($categorySlug) {
@@ -272,7 +268,8 @@ public function allProducts(Request $request)
                 $q->where('slug', $categorySlug);
             });
         }
-            // Brand filter
+
+        // Brand filter
         if ($brandSlug) {
             $query->whereHas('brand', function ($q) use ($brandSlug) {
                 $q->where('slug', $brandSlug);
@@ -283,6 +280,7 @@ public function allProducts(Request $request)
         if ($minPrice !== null && $minPrice !== '') {
             $query->where('final_price', '>=', $minPrice);
         }
+
         // Max price filter
         if ($maxPrice !== null && $maxPrice !== '') {
             $query->where('final_price', '<=', $maxPrice);
@@ -291,30 +289,30 @@ public function allProducts(Request $request)
         $products = $query->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'page', $page);
 
-        // Transform products to include translated fields
-        $products->getCollection()->transform(function ($product) use ($locale) {
+        // Transform products to include category name
+        $products->getCollection()->transform(function ($product) {
             return [
                 'id' => $product->id,
-                'name' => $product->product_translations->first()?->name ?? $product->name,
+                'name' => $product->name,
                 'slug' => $product->slug,
                 'thumnail_img' => $product->thumnail_img,
                 'sale_price' => $product->sale_price,
                 'final_price' => $product->final_price,
                 'stock' => $product->stock,
-                'category_name' => $product->category?->category_translations->first()?->name ?? $product->category?->name ?? 'N/A',
+                'category_name' => $product->category?->name ?? 'N/A',
             ];
         });
-          $wishlist = [];
-                if (Auth::check()) {
-                    $wishlist = Auth::user()->wishlist()->pluck('product_id')->toArray();
-                }
+
+        $wishlist = [];
+        if (Auth::check()) {
+            $wishlist = Auth::user()->wishlist()->pluck('product_id')->toArray();
+        }
 
         return Inertia::render('frontend/products/AllProducts', [
             'products' => $products,
             'categories' => $categories,
             'brands' => $brands,
             'wishlist' => $wishlist,
-            'translations' => __('messages'),
             'locale' => $locale,
             'selectedCategory' => $categorySlug,
             'selectedBrand' => $brandSlug,
