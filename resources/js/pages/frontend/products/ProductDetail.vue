@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, getCurrentInstance } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import UserLayout from '@/layouts/UserLayout.vue';
 import { Row, Col } from 'ant-design-vue';
@@ -17,9 +17,8 @@ import {
 } from '@ant-design/icons-vue';
 import LoginModal from "@/components/frontend/LoginModal.vue";
 const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as any)?.products || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const user = computed(() => (page.props.auth as any)?.user);
 const isLoginModalVisible = ref(false);
@@ -136,13 +135,13 @@ const addToCart = () => {
         <section class="pb-7">
             <div class="container mx-auto px-4">
                 <div class="flex flex-wrap items-center text-sm text-gray-500">
-                    <Link :href="route('home')" class="hover:text-primary">{{ translations.home || 'Home' }}</Link>
+                    <Link :href="route('home')" class="hover:text-primary">{{ t('Home') }}</Link>
                     <span class="mx-2">/</span>
-                    <span>{{ translations.products || 'Products' }}</span>
+                    <span>{{ t('Products') }}</span>
                     <span class="mx-2">/</span>
-                    <span>{{ product.category_name }}</span>
+                    <span>{{ t(product.category_name) }}</span>
                     <span class="mx-2">/</span>
-                    <span class="text-gray-700">{{ product.name }}</span>
+                    <span class="text-gray-700">{{ t(product.name) }}</span>
                 </div>
             </div>
         </section>
@@ -208,10 +207,9 @@ const addToCart = () => {
                                 <CheckCircleOutlined
                                     :class="product.stock > 0 ? 'text-green-500 mr-2' : 'text-red-500 mr-2'" />
                                 <span class="text-gray-700">
-                                    {{ product.stock > 0 ? translations.in_stock || 'In Stock' :
-                                        translations.out_of_stock || 'Out of Stock' }}
+                                    {{ product.stock > 0 ? t('In Stock') : t('Out of Stock') }}
                                     <span v-if="product.stock > 0" class="text-gray-500">({{ product.stock }}
-                                        {{ translations.available || 'Available' }})</span>
+                                        {{ t('Available') }})</span>
                                 </span>
                             </div>
                         </div>
@@ -221,27 +219,26 @@ const addToCart = () => {
                             <Col :xs="24" :sm="8">
                             <div class="flex items-center p-3 bg-gray-100 rounded-lg">
                                 <CarOutlined class="text-primary text-xl mr-2" />
-                                <span class="text-sm">{{ translations.free_shipping || 'Free Shipping' }}</span>
+                                <span class="text-sm">{{ t('Free Shipping') }}</span>
                             </div>
                             </Col>
                             <Col :xs="24" :sm="8">
                             <div class="flex items-center p-3 bg-gray-100 rounded-lg">
                                 <SafetyCertificateOutlined class="text-primary text-xl mr-2" />
-                                <span class="text-sm">{{ translations.secure || 'Secure Payment' }}</span>
+                                <span class="text-sm">{{ t('Secure Payment') }}</span>
                             </div>
                             </Col>
                             <Col :xs="24" :sm="8">
                             <div class="flex items-center p-3 bg-gray-100 rounded-lg">
                                 <CheckCircleOutlined class="text-primary text-xl mr-2" />
-                                <span class="text-sm">{{ translations.money_back || 'Money Back' }}</span>
+                                <span class="text-sm">{{ t('Money Back') }}</span>
                             </div>
                             </Col>
                         </Row>
 
                         <!-- Quantity -->
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ translations.quantity ||
-                                'Quantity' }}</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('Quantity') }}</label>
                             <div class="flex items-center">
                                 <button @click="decreaseQuantity"
                                     class="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-l-md hover:bg-gray-100">
@@ -265,8 +262,7 @@ const addToCart = () => {
                                     class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2">
                                 </div>
                                 <ShoppingCartOutlined v-else class="mr-2" />
-                                {{ product.stock === 0 ? translations.out_of_stock || 'Out of Stock' :
-                                    translations.add_to_cart || 'Add to Cart' }}
+                                {{ product.stock === 0 ? t('Out of Stock') : t('Add to Cart') }}
                             </button>
                             </Col>
                             <Col :xs="24" :sm="12">
@@ -279,8 +275,8 @@ const addToCart = () => {
                                 <HeartOutlined v-else :class="isInWishlist(product.id) ? 'text-white' : 'text-gray-600'"
                                     class="mr-2" />
                                 {{ isInWishlist(product.id)
-                                    ? (translations.remove_from_wishlist || 'Remove from Wishlist')
-                                    : (translations.add_to_wishlist || 'Add to Wishlist')
+                                    ? t('Remove from Wishlist')
+                                    : t('Add to Wishlist')
                                 }}
                             </button>
                             </Col>
@@ -294,13 +290,13 @@ const addToCart = () => {
                     <div class="border-b border-gray-200">
                         <nav class="flex -mb-px">
                             <button class="py-4 px-6 border-b-2 border-primary font-medium text-primary">
-                                {{ translations.description || 'Description' }}
+                                {{ t('Description') }}
                             </button>
                         </nav>
                     </div>
 
                     <div class="py-6 prose max-w-none">
-                        <p>{{ product.description }}</p>
+                        <p>{{ t(product.description) }}</p>
                     </div>
                 </div>
             </div>
