@@ -3,7 +3,6 @@ import { computed, ref, onMounted, onUnmounted, getCurrentInstance } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import CartItems from './CartItems.vue';
 
-const page = usePage();
 const { appContext } = getCurrentInstance()!;
 const t = appContext.config.globalProperties.$t as (key: string) => string;
 

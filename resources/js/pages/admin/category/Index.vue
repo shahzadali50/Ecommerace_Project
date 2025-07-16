@@ -275,20 +275,6 @@ const handleExcelFileChange = (e: Event) => {
         importForm.excel_file = target.files[0];
     }
 };
-
-const downloadTemplate = () => {
-    // Create a simple CSV template
-    const csvContent = "name,description\nElectronics,Electronic devices and accessories\nClothing,Fashion and apparel items\nBooks,Educational and entertainment books";
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'categories_import_template.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-};
 </script>
 
 <template>

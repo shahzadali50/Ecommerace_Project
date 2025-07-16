@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { Link } from "@inertiajs/vue3";
-import { usePage } from '@inertiajs/vue3';
-import { computed, getCurrentInstance } from 'vue';
+import { getCurrentInstance } from 'vue';
 
-const page = usePage();
 const { appContext } = getCurrentInstance()!;
 const t = appContext.config.globalProperties.$t as (key: string) => string;
 

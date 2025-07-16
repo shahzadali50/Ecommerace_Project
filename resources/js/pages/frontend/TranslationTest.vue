@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getCurrentInstance, ref, watch } from 'vue';
+import { getCurrentInstance, ref } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import UserLayout from '@/layouts/UserLayout.vue';
 
@@ -35,20 +35,7 @@ const t = appContext.config.globalProperties.$t as (key: string) => string;
       <div class="container mx-auto px-4">
         <div class="flex flex-col">
           <div class="w-full">
-            <div
-              v-if="props.flash?.success"
-              class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 flex justify-between items-center"
-            >
-              {{ props.flash.success }}
-              <button
-                type="button"
-                class="text-green-700 hover:text-green-900"
-                aria-label="Close"
-                @click="props.flash.success = ''"
-              >
-                <span>×</span>
-              </button>
-            </div>
+           
 
             <div
               v-if="props.flash?.error"
