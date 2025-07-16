@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import UserLayout from "@/layouts/UserLayout.vue";
-import { computed } from "vue";
+import { computed, getCurrentInstance } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import { Row, Col } from "ant-design-vue";
 import { Button } from "@/components/ui/button";
@@ -21,9 +21,10 @@ interface PageProps extends InertiaPageProps {
 }
 
 const page = usePage<PageProps>();
-const translations = computed(() => {
-    return (page.props.translations as any)?.cart_checkout || {};
-});
+
+// 👇 get access to global $t
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const cart = computed(() => {
     const data = (usePage().props.cart as any[]) || [];
@@ -33,7 +34,7 @@ const total = computed(() => {
     return cart.value.reduce((sum, item) => sum + item.total_price, 0);
 });
 const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-PK", {
         style: "currency",
         currency: "PKR",
         minimumFractionDigits: 2,
@@ -55,11 +56,11 @@ const orderGenerate = () => {
 <template>
     <UserLayout>
 
-        <Head title="Payment" />
+        <Head :title="t('Payment')" />
         <section class="py-14">
             <div class="container mx-auto px-2 sm:px-4">
                 <Link :href="route('cart.checkout')" class="flex items-center mb-2">
-                <ArrowLeftOutlined />Back</Link>
+                <ArrowLeftOutlined />{{ t('Back') }}</Link>
                 <a-alert class="my-1" v-if="page.props.flash?.success" :message="page.props.flash.success"
                     type="success" show-icon />
                 <Row v-if="!cart || cart.length === 0" class="py-10">
@@ -67,11 +68,11 @@ const orderGenerate = () => {
                     <div class="text-center">
                         <ShoppingCartOutlined class="text-7xl text-gray-400 mb-4" />
                         <h4 class="text-gray-500 text-2xl">
-                            {{ translations.cart_empty || "Your cart is empty" }}
+                            {{ t('Your cart is empty') }}
                         </h4>
                         <Link :href="route('home')" class="inline-block mt-4">
                         <Button>{{
-                            translations.continue_shopping || "Continue Shopping"
+                            t('Continue Shopping')
                             }}</Button>
                         </Link>
                     </div>
@@ -97,19 +98,19 @@ const orderGenerate = () => {
                                 {{ form.errors.payment_method }}
                             </div>
                             <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-                                {{ translations.payment_method || "Payment Method" }}
+                                {{ t('Payment Method') }}
                             </h1>
                             <div class="">
                                 <div class="flex items-center">
                                     <a-radio-group v-model:value="form.payment_method" class="ml-2">
                                         <a-radio value="Cash On Delivery">{{
-                                            translations.cash_on_delivery || "Cash On Delivery"
+                                            t('Cash On Delivery')
                                             }}</a-radio>
                                     </a-radio-group>
                                 </div>
                                 <p class="text-gray-500 text-sm ml-6">
                                     {{
-                                        translations.pay_cash_on_delivery || "Pay with cash upon delivery."
+                                        t('Pay with cash upon delivery.')
                                     }}
                                 </p>
                             </div>
@@ -118,7 +119,7 @@ const orderGenerate = () => {
                                     class="w-full btn-primary mt-5 flex items-center justify-center py-4"
                                     :disabled="form.processing">
                                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin mr-2" />
-                                    Place Order
+                                    {{ t('Place Order') }}
                                     <template #icon v-if="!form.processing">
                                         <ShoppingOutlined />
                                     </template>
@@ -138,24 +139,24 @@ const orderGenerate = () => {
                             style="box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
                         <div>
                             <h1 class="text-2xl font-bold text-gray-900 mb-6">
-                                Order Summary
+                                {{ t('Order Summary') }}
                             </h1>
                         </div>
                         <!-- <CartItems /> -->
                         <div class="flex justify-between mb-4 border-b py-4">
-                            <span class="">{{ translations.subtotal || "Subtotal" }}</span>
+                            <span class="">{{ t('Subtotal') }}</span>
                             <span class=" text-slate-500">{{ formatPrice(total) }}</span>
                         </div>
                         <div class="flex justify-between mb-4 border-b py-4">
                             <span class="">{{
-                                translations.shipping_charge || "Shipping"
+                                t('Shipping')
                                 }}</span>
                             <span class=" text-slate-500">{{
-                                translations.free_delivery || "Free Delivery"
+                                t('Free Delivery')
                                 }}</span>
                         </div>
                         <div class="flex justify-between mb-4">
-                            <span class="">{{ translations.total || "Total" }}:</span>
+                            <span class="">{{ t('Total') }}:</span>
                             <span class=" text-slate-500">{{ formatPrice(total) }}</span>
                         </div>
                         </Col>
