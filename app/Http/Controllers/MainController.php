@@ -199,7 +199,6 @@ class MainController extends Controller
                 'totalProduct' => $totalProduct,
                 'category' => $category,
                 'orders' => $orders,
-                'translations' => __('messages'),
                 'locale' => App::getLocale(),
             ]);
         } catch (\Throwable $e) {

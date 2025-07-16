@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { Modal } from 'ant-design-vue';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import dayjs from "dayjs";
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-dt';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import { router } from '@inertiajs/vue3';
+import { getCurrentInstance } from 'vue';
 
 DataTable.use(DataTablesCore);
 
@@ -17,10 +18,8 @@ const formatDate = (date: string) => {
     return date ? dayjs(date).format("DD-MM-YYYY hh:mm A") : "N/A";
 };
 
-const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as any)?.dashboard_all_pages || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 defineProps<{
     categories: {
@@ -69,9 +68,9 @@ const importForm = useForm({
 
 // DataTable columns for categories
 const dataTableColumns = [
-    { title: translations.value.sr || 'Sr.', data: null, render: (data: any, type: any, row: any, meta: any) => meta.row + 1 },
+    { title: t('Sr.'), data: null, render: (data: any, type: any, row: any, meta: any) => meta.row + 1 },
     {
-        title: translations.value.image || 'Image',
+        title: t('Image'),
         data: 'image',
         orderable: false,
         render: (data: string) =>
@@ -79,24 +78,24 @@ const dataTableColumns = [
                 ? `<img src="/storage/${data}" class="w-12 h-12 object-cover rounded mb-1 cursor-pointer" style="display:inline-block;" />`
                 : '<span class="text-gray-400 mb-1">No Image</span>'
     },
-    { title: translations.value.name || 'Name', data: 'name' },
-    { title: translations.value.description || 'Description', data: 'description', render: (data: string) => data ?? 'N/A' },
-    { title: translations.value.created_at || 'Created At', data: 'created_at', render: (data: string) => formatDate(data) },
+    { title: t('Name'), data: 'name' },
+    { title: t('Description'), data: 'description', render: (data: string) => data ?? 'N/A' },
+    { title: t('Created At'), data: 'created_at', render: (data: string) => formatDate(data) },
     {
-        title: translations.value.action || 'Action',
+        title: t('Action'),
         data: null,
         orderable: false,
         render: (data, type, row) => `
-        <button class="edit-btn p-2" data-id="${row.id}" title="${translations.value.edit || 'Edit'}">
+        <button class="edit-btn p-2" data-id="${row.id}" title="${t('Edit')}">
             <i class="fa fa-pencil-square-o text-green-500"></i>
         </button>
-        <button class="delete-btn p-2" data-id="${row.id}" title="${translations.value.delete || 'Delete'}">
+        <button class="delete-btn p-2" data-id="${row.id}" title="${t('Delete')}">
             <i class="fa fa-trash text-red-500"></i>
         </button>
-        <button class="brand-btn p-2" data-id="${row.id}" title="${translations.value.add_brand || 'Add Brand'}">
+        <button class="brand-btn p-2" data-id="${row.id}" title="${t('Add Brand')}">
             <i class="fa fa-creative-commons"></i>
         </button>
-        <button class="related-brand-btn p-2" data-id="${row.slug}" title="${translations.value.brand_list || 'Brand List'}">
+        <button class="related-brand-btn p-2" data-id="${row.slug}" title="${t('Brand List')}">
             <i class="fa fa-list text-slate-800"></i>
         </button>
     `
@@ -167,11 +166,11 @@ const saveCategory = () => {
 }
 const deleteCategory = (id: number) => {
     Modal.confirm({
-        title: translations.value.confirm_delete_title || 'Are you sure you want to delete',
-        content: translations.value.confirm_delete_content_category || 'Deleting this category will also remove all associated brands. This action is irreversible. Are you sure you want to proceed?',
-        okText: translations.value.confirm_delete_ok || 'Yes, Delete',
+        title: t('Are you sure you want to delete'),
+        content: t('Deleting this category will also remove all associated brands. This action is irreversible. Are you sure you want to proceed?'),
+        okText: t('Yes, Delete'),
         okType: 'danger',
-        cancelText: translations.value.confirm_delete_cancel || 'Cancel',
+        cancelText: t('Cancel'),
         onOk() {
             isLoading.value = true;
             form.delete(route('admin.category.delete', { id: id }), {
@@ -283,23 +282,23 @@ const handleExcelFileChange = (e: Event) => {
     </div>
     <AdminLayout>
 
-        <Head :title="translations.category_title || 'Category List'" />
+        <Head :title="t('Category List')" />
 
         <a-row>
             <a-col :xs="24">
                 <div class="bg-white rounded-lg responsive-table p-4 shadow-md">
                     <div class="mb-4 flex items-center justify-between">
-                        <h2 class="text-lg font-semibold mb-4">{{ translations.category_title || 'Category List' }}</h2>
+                        <h2 class="text-lg font-semibold mb-4">{{ t('Category List') }}</h2>
                         <div>
                             <a-button @click="openAddCategoryModal()" type="default">
-                                {{ translations.add_category || 'Add Category' }}
+                                {{ t('Add Category') }}
                             </a-button>
                             <a-button @click="importCategory()" type="default">
                                 Import Category
                             </a-button>
                             <Link :href="route('admin.category.log')">
                             <a-button type="default">
-                                {{ translations.category_logs || 'Category Logs' }}
+                                {{ t('Category Logs') }}
                             </a-button>
                             </Link>
                         </div>
@@ -308,12 +307,12 @@ const handleExcelFileChange = (e: Event) => {
                         :options="options" class="display">
                         <thead>
                             <tr>
-                                <th>{{ translations.sr || 'Sr.' }}</th>
-                                <th>{{ translations.image || 'Image' }}</th>
-                                <th>{{ translations.name || 'Name' }}</th>
-                                <th>{{ translations.description || 'Description' }}</th>
-                                <th>{{ translations.created_at || 'Created At' }}</th>
-                                <th>{{ translations.action || 'Action' }}</th>
+                                <th>{{ t('Sr.') }}</th>
+                                <th>{{ t('Image') }}</th>
+                                <th>{{ t('Name') }}</th>
+                                <th>{{ t('Description') }}</th>
+                                <th>{{ t('Created At') }}</th>
+                                <th>{{ t('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -327,61 +326,60 @@ const handleExcelFileChange = (e: Event) => {
 
 
         <!-- Add Category Modal -->
-        <a-modal v-model:open="isAddCategoryModalVisible" :title="translations.add_category || 'Add Category'"
+        <a-modal v-model:open="isAddCategoryModalVisible" :title="t('Add Category')"
             @cancel="isAddCategoryModalVisible = false" :footer="null">
             <form @submit.prevent="saveCategory()" enctype="multipart/form-data">
                 <div class="mb-4">
-                    <label class="block">{{ translations.name || 'Name' }}</label>
+                    <label class="block">{{ t('Name') }}</label>
                     <a-input v-model:value="form.name" class="mt-2 w-full"
-                        :placeholder="translations.name_placeholder || 'Enter Name'" />
+                        :placeholder="t('Enter Name')" />
                     <div v-if="form.errors.name" class="text-red-500">{{ form.errors.name }}</div>
                 </div>
                 <div class="mb-4">
-                    <label class="block">{{ translations.description || 'Description' }}</label>
+                    <label class="block">{{ t('Description') }}</label>
                     <a-textarea v-model:value="form.description" class="mt-2 w-full"
-                        :placeholder="translations.eneter_description || 'Enter Description'"
+                        :placeholder="t('Enter Description')"
                         :auto-size="{ minRows: 2, maxRows: 5 }" />
                     <div v-if="form.errors.description" class="text-red-500">{{ form.errors.description }}</div>
                 </div>
                 <div class="mb-4">
-                    <label class="block">{{ translations.image || 'Image' }}</label>
+                    <label class="block">{{ t('Image') }}</label>
                     <input type="file" @change="handleImageChange" accept="image/*"
                         class="mt-2 w-full p-2 border rounded" />
                     <div v-if="form.errors.image" class="text-red-500">{{ form.errors.image }}</div>
                     <div v-if="imagePreview" class="mt-2">
-                        <p class="text-sm text-gray-600 mb-1">{{ translations.preview || 'Preview' }}:</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ t('Preview') }}:</p>
                         <img :src="imagePreview" alt="Image Preview" class="w-24 h-24 object-cover rounded border" />
                     </div>
                 </div>
                 <div class="text-right">
-                    <a-button type="default" @click="isAddCategoryModalVisible = false">{{ translations.cancel ||
-                        'Cancel' }}</a-button>
-                    <a-button type="primary" html-type="submit" class="ml-2">{{ translations.add || 'Add' }}</a-button>
+                    <a-button type="default" @click="isAddCategoryModalVisible = false">{{ t('Cancel') }}</a-button>
+                    <a-button type="primary" html-type="submit" class="ml-2">{{ t('Add') }}</a-button>
                 </div>
             </form>
         </a-modal>
 
         <!-- Edit Category Modal -->
-        <a-modal v-model:open="isEditModalVisible" :title="translations.update || 'Edit Category'"
+        <a-modal v-model:open="isEditModalVisible" :title="t('Edit Category')"
             @cancel="isEditModalVisible = false" :footer="null">
             <form @submit.prevent="updateCategory()" enctype="multipart/form-data">
                 <div class="mb-4">
-                    <label class="block">{{ translations.name || 'Name' }}</label>
+                    <label class="block">{{ t('Name') }}</label>
                     <a-input v-model:value="editForm.name" class="mt-2 w-full"
-                        :placeholder="translations.name_placeholder || 'Enter Name'" />
+                        :placeholder="t('Enter Name')" />
                     <div v-if="editForm.errors.name" class="text-red-500">{{ editForm.errors.name }}</div>
                 </div>
                 <div class="mb-4">
-                    <label class="block">{{ translations.description || 'Description' }}</label>
+                    <label class="block">{{ t('Description') }}</label>
                     <a-textarea v-model:value="editForm.description" class="mt-2 w-full"
-                        :placeholder="translations.eneter_description || 'Enter Description'"
+                        :placeholder="t('Enter Description')"
                         :auto-size="{ minRows: 2, maxRows: 5 }" />
                     <div v-if="editForm.errors.description" class="text-red-500">{{ editForm.errors.description }}</div>
                 </div>
                 <div class="mb-4">
-                    <label class="block">{{ translations.image || 'Image' }}</label>
+                    <label class="block">{{ t('Image') }}</label>
                     <div v-if="currentImage" class="mb-2">
-                        <p class="text-sm text-gray-500 mb-1">{{ translations.current_image || 'Current Image' }}</p>
+                        <p class="text-sm text-gray-500 mb-1">{{ t('Current Image') }}</p>
                         <img :src="'/storage/' + currentImage" alt="Current Category Image"
                             class="w-24 h-24 object-cover rounded border" />
                         <p class="text-xs text-gray-500 mt-1">{{ getOriginalFilename(currentImage) }}</p>
@@ -390,66 +388,61 @@ const handleExcelFileChange = (e: Event) => {
                         class="mt-2 w-full p-2 border rounded" />
                     <div v-if="editForm.errors.image" class="text-red-500">{{ editForm.errors.image }}</div>
                     <div class="mt-2 text-sm text-gray-500">
-                        {{ translations.keep_current_image || 'Leave empty to keep the current image' }}
+                        {{ t('Leave empty to keep the current image') }}
                     </div>
                     <div v-if="editImagePreview" class="mt-2">
-                        <p class="text-sm text-gray-600 mb-1">{{ translations.new_image_preview || 'New Image Preview'
-                        }}:</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ t('New Image Preview') }}:</p>
                         <img :src="editImagePreview" alt="New Image Preview"
                             class="w-24 h-24 object-cover rounded border" />
                     </div>
                 </div>
                 <div class="text-right">
-                    <a-button type="default" @click="isEditModalVisible = false">{{ translations.cancel || 'Cancel'
-                    }}</a-button>
-                    <a-button type="primary" html-type="submit" class="ml-2">{{ translations.update || 'Update'
-                    }}</a-button>
+                    <a-button type="default" @click="isEditModalVisible = false">{{ t('Cancel') }}</a-button>
+                    <a-button type="primary" html-type="submit" class="ml-2">{{ t('Update') }}</a-button>
                 </div>
             </form>
         </a-modal>
 
         <!-- Brand Modal -->
-        <a-modal v-model:open="isbrandModalVisible" :title="translations.add_brand || 'Add Brand'"
+        <a-modal v-model:open="isbrandModalVisible" :title="t('Add Brand')"
             @cancel="isbrandModalVisible = false" :footer="null">
-            <h4 class="text-md">{{ translations.category || 'Category' }} ({{ selectedCategoryName }})</h4>
+            <h4 class="text-md">{{ t('Category') }} ({{ selectedCategoryName }})</h4>
             <form @submit.prevent="saveBrand()" enctype="multipart/form-data">
                 <a-input hidden v-model:value="brandForm.category_id" class="mt-2 w-full"
-                    :placeholder="translations.name_placeholder || 'Enter Name'" />
+                    :placeholder="t('Enter Name')" />
                 <div class="mb-4">
-                    <label class="block">{{ translations.name || 'Name' }}</label>
+                    <label class="block">{{ t('Name') }}</label>
                     <a-input v-model:value="brandForm.name" class="mt-2 w-full"
-                        :placeholder="translations.name_placeholder || 'Enter Name'" />
+                        :placeholder="t('Enter Name')" />
                     <div v-if="brandForm.errors.name" class="text-red-500">{{ brandForm.errors.name }}</div>
                 </div>
                 <div class="mb-4">
-                    <label class="block">{{ translations.description || 'Description' }}</label>
+                    <label class="block">{{ t('Description') }}</label>
                     <a-textarea v-model:value="brandForm.description" class="mt-2 w-full"
-                        :placeholder="translations.eneter_description || 'Enter Description'"
+                        :placeholder="t('Enter Description')"
                         :auto-size="{ minRows: 2, maxRows: 5 }" />
                     <div v-if="brandForm.errors.description" class="text-red-500">{{ brandForm.errors.description }}
                     </div>
                 </div>
                 <div class="mb-4">
-                    <label class="block">{{ translations.image || 'Image' }}</label>
+                    <label class="block">{{ t('Image') }}</label>
                     <input type="file" @change="handleBrandImageChange" accept="image/*"
                         class="mt-2 w-full p-2 border rounded" />
                     <div v-if="brandForm.errors.image" class="text-red-500">{{ brandForm.errors.image }}</div>
                     <div v-if="imagePreview" class="mt-2">
-                        <p class="text-sm text-gray-600 mb-1">{{ translations.preview || 'Preview' }}:</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ t('Preview') }}:</p>
                         <img :src="imagePreview" alt="Image Preview" class="w-24 h-24 object-cover rounded border" />
                     </div>
                 </div>
                 <div class="text-right">
-                    <a-button type="default" @click="isbrandModalVisible = false">{{ translations.cancel || 'Cancel'
-                    }}</a-button>
-                    <a-button type="primary" html-type="submit" class="ml-2">{{ translations.save || 'Save'
-                    }}</a-button>
+                    <a-button type="default" @click="isbrandModalVisible = false">{{ t('Cancel') }}</a-button>
+                    <a-button type="primary" html-type="submit" class="ml-2">{{ t('Save') }}</a-button>
                 </div>
             </form>
         </a-modal>
 
         <!-- Image Preview Modal -->
-        <a-modal v-model:open="isImagePreviewModalVisible" :title="translations.preview || 'Image Preview'"
+        <a-modal v-model:open="isImagePreviewModalVisible" :title="t('Image Preview')"
             @cancel="isImagePreviewModalVisible = false" :footer="null" width="600px">
             <div class="flex justify-center p-4">
                 <img :src="previewImageUrl" alt="Full Size Image" class="max-w-full max-h-[500px] object-cover" />
@@ -457,28 +450,28 @@ const handleExcelFileChange = (e: Event) => {
         </a-modal>
 
         <!-- Import Category Modal -->
-        <a-modal v-model:open="isImportModalVisible" :title="translations.import_category || 'Import Category'"
+        <a-modal v-model:open="isImportModalVisible" :title="t('Import Category')"
             @cancel="isImportModalVisible = false" :footer="null">
             <form @submit.prevent="handleImportData()" enctype="multipart/form-data">
                 <div class="mb-4">
-                    <label class="block font-medium mb-2">{{ translations.excel_file || 'Excel File' }}</label>
+                    <label class="block font-medium mb-2">{{ t('Excel File') }}</label>
                     <input type="file"
                         @change="handleExcelFileChange"
                         accept=".xlsx,.xls,.csv"
                         class="mt-2 w-full p-2 border rounded"
                         required />
                     <div class="text-sm text-gray-500 mt-1">
-                        {{ translations.supported_formats || 'Supported formats: XLSX, XLS, CSV' }}
+                        {{ t('Supported formats: XLSX, XLS, CSV') }}
                     </div>
                     <div v-if="importForm.errors.excel_file" class="text-red-500 mt-1">{{ importForm.errors.excel_file }}</div>
                 </div>
 
                 <div class="text-right">
                     <a-button type="default" @click="isImportModalVisible = false">
-                        {{ translations.cancel || 'Cancel' }}
+                        {{ t('Cancel') }}
                     </a-button>
                     <a-button type="primary" html-type="submit" class="ml-2" :loading="isImporting">
-                        {{ translations.import || 'Import' }}
+                        {{ t('Import') }}
                     </a-button>
                 </div>
             </form>
