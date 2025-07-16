@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { ref, getCurrentInstance } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import {
   FacebookOutlined,
   TwitterOutlined,
@@ -11,23 +11,19 @@ import {
   CustomerServiceOutlined
 } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-
-// Get page props and create a computed property for translations
-const page = usePage();
-const translations = computed(() => {
-  return page.props.translations?.footer || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const email = ref('');
 
 const subscribe = () => {
   if (!email.value) {
-    message.error(translations.value.enter_email || 'Please enter your email address');
+    message.error(t('Please enter your email address'));
     return;
   }
 
   // Here you would typically send the email to your backend
-  message.success(translations.value.subscribe_success || 'Thank you for subscribing!');
+  message.success(t('Thank you for subscribing!'));
   email.value = '';
 };
 </script>
@@ -43,8 +39,8 @@ const subscribe = () => {
             <CarOutlined class="text-3xl" />
           </div>
           <div>
-            <h3 class="text-lg font-semibold">{{ translations.free_shipping || 'Free Shipping' }}</h3>
-            <p class="text-sm text-blue-100">{{ translations.free_shipping_desc || 'On orders over $50' }}</p>
+            <h3 class="text-lg font-semibold">{{ t('Free Shipping') }}</h3>
+            <p class="text-sm text-blue-100">{{ t('On orders over $50') }}</p>
           </div>
         </div>
 
@@ -54,8 +50,8 @@ const subscribe = () => {
             <SafetyCertificateOutlined class="text-3xl" />
           </div>
           <div>
-            <h3 class="text-lg font-semibold">{{ translations.secure_payment || 'Secure Payment' }}</h3>
-            <p class="text-sm text-blue-100">{{ translations.secure_payment_desc || '100% secure payment' }}</p>
+            <h3 class="text-lg font-semibold">{{ t('Secure Payment') }}</h3>
+            <p class="text-sm text-blue-100">{{ t('100% secure payment') }}</p>
           </div>
         </div>
 
@@ -65,8 +61,8 @@ const subscribe = () => {
             <CustomerServiceOutlined class="text-3xl" />
           </div>
           <div>
-            <h3 class="text-lg font-semibold">{{ translations.support || '24/7 Support' }}</h3>
-            <p class="text-sm text-blue-100">{{ translations.support_desc || 'Dedicated support' }}</p>
+            <h3 class="text-lg font-semibold">{{ t('24/7 Support') }}</h3>
+            <p class="text-sm text-blue-100">{{ t('Dedicated support') }}</p>
           </div>
         </div>
       </div>
@@ -86,7 +82,7 @@ const subscribe = () => {
             </Link>
           </div>
           <p class="text-gray-600 mb-4">
-            {{ translations.company_description || 'Your trusted marketplace for quality products and services.' }}
+            {{ t('Your trusted marketplace for quality products and services.') }}
           </p>
           <div class="flex space-x-4">
             <a href="#" class="text-gray-500 hover:text-gray-700">
@@ -106,62 +102,62 @@ const subscribe = () => {
 
         <!-- Quick Links -->
         <div>
-          <h3 class="text-lg font-semibold mb-4">{{ translations.quick_links || 'Quick Links' }}</h3>
+          <h3 class="text-lg font-semibold mb-4">{{ t('Quick Links') }}</h3>
           <ul class="space-y-2">
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.home || 'Home' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('Home') }}</Link>
             </li>
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.products || 'Products' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('Products') }}</Link>
             </li>
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.categories || 'Categories' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('Categories') }}</Link>
             </li>
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.brands || 'Brands' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('Brands') }}</Link>
             </li>
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.about_us || 'About Us' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('About Us') }}</Link>
             </li>
           </ul>
         </div>
 
         <!-- Customer Service -->
         <div>
-          <h3 class="text-lg font-semibold mb-4">{{ translations.customer_service || 'Customer Service' }}</h3>
+          <h3 class="text-lg font-semibold mb-4">{{ t('Customer Service') }}</h3>
           <ul class="space-y-2">
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.contact_us || 'Contact Us' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('Contact Us') }}</Link>
             </li>
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.faq || 'FAQ' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('FAQ') }}</Link>
             </li>
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.shipping_info || 'Shipping Info' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('Shipping Info') }}</Link>
             </li>
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.returns || 'Returns' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('Returns') }}</Link>
             </li>
             <li>
-              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ translations.privacy_policy || 'Privacy Policy' }}</Link>
+              <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('Privacy Policy') }}</Link>
             </li>
           </ul>
         </div>
 
         <!-- Newsletter -->
         <div>
-          <h3 class="text-lg font-semibold mb-4">{{ translations.newsletter || 'Newsletter' }}</h3>
+          <h3 class="text-lg font-semibold mb-4">{{ t('Newsletter') }}</h3>
           <p class="text-gray-600 mb-4">
-            {{ translations.newsletter_desc || 'Subscribe to our newsletter for updates and exclusive offers.' }}
+            {{ t('Subscribe to our newsletter for updates and exclusive offers.') }}
           </p>
           <div class="flex">
             <a-input
               v-model:value="email"
-              :placeholder="translations.email_placeholder || 'Your email'"
+              :placeholder="t('Your email')"
               class="rounded-r-none"
             />
             <a-button  class="btn-primary" @click="subscribe">
-              {{ translations.subscribe || 'Subscribe' }}
+              {{ t('Subscribe') }}
             </a-button>
           </div>
         </div>
@@ -172,13 +168,13 @@ const subscribe = () => {
         <div class="flex flex-col md:flex-row justify-between items-center">
           <div class="mb-4 md:mb-0">
             <p class="text-gray-600 text-sm">
-              {{ (translations.copyright || '© :year Lacuna Marketplace. All rights reserved.').replace(':year', new Date().getFullYear().toString()) }}
+              {{ t('© :year Lacuna Marketplace. All rights reserved.').replace(':year', new Date().getFullYear().toString()) }}
             </p>
           </div>
           <div class="flex space-x-4">
-            <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-sm">{{ translations.terms || 'Terms' }}</Link>
-            <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-sm">{{ translations.privacy || 'Privacy' }}</Link>
-            <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-sm">{{ translations.cookies || 'Cookies' }}</Link>
+            <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-sm">{{ t('Terms') }}</Link>
+            <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-sm">{{ t('Privacy') }}</Link>
+            <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-sm">{{ t('Cookies') }}</Link>
           </div>
         </div>
       </div>

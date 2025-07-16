@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, getCurrentInstance } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
@@ -36,9 +36,8 @@ const wishlistCount = computed(() => wishlist.value.length);
 
 
 const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as any)?.header || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const { props } = usePage();
 const mobileMenuOpen = ref(false);
@@ -83,16 +82,16 @@ const toggleSearch = () => {
 
 
                     <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-[18px]">
-                    {{ translations.home || 'Home' }}
+                    {{ t('Home') }}
                     </Link>
                     <Link :href="route('all.products')" class="text-gray-600 hover:text-gray-900 text-[18px]">
-                    {{ translations.shop || 'Shop' }}
+                    {{ t('Shop') }}
                     </Link>
                     <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-[18px]">
-                    {{ translations.categories || 'Categories' }}
+                    {{ t('Categories') }}
                     </Link>
                     <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-[18px]">
-                    {{ translations.brands || 'Brands' }}
+                    {{ t('Brands') }}
                     </Link>
                 </nav>
 
@@ -120,13 +119,13 @@ const toggleSearch = () => {
                                 <a-menu>
                                     <a-menu-item key="profile">
                                         <Link :href="route('dashboard')" class="text-gray-600 hover:text-gray-900">
-                                        {{ translations.dashboard || 'Dashboard' }}
+                                        {{ t('Dashboard') }}
                                         </Link>
 
                                     </a-menu-item>
                                     <a-menu-divider />
                                     <a-menu-item key="logout">
-                                     <a href="#" @click.prevent="handleLogout">{{ translations.logout || 'Logout'}}</a>
+                                     <a href="#" @click.prevent="handleLogout">{{ t('Logout') }}</a>
                                     </a-menu-item>
                                 </a-menu>
                             </template>
@@ -142,12 +141,12 @@ const toggleSearch = () => {
                                     <a-menu>
                                         <a-menu-item key="login">
                                             <Link :href="route('login')" class="text-gray-600 hover:text-gray-900">
-                                            {{ translations.login || 'Login' }}
+                                            {{ t('Login') }}
                                             </Link>
                                         </a-menu-item>
                                         <a-menu-item key="register">
                                             <Link :href="route('register')" class="text-gray-600 hover:text-gray-900">
-                                            {{ translations.register || 'Register' }}
+                                            {{ t('Register') }}
                                             </Link>
                                         </a-menu-item>
                                     </a-menu>
@@ -184,14 +183,14 @@ const toggleSearch = () => {
                                 <a-menu>
                                     <a-menu-item key="profile">
                                         <Link :href="route('dashboard')" class="text-gray-600 hover:text-gray-900">
-                                        {{ translations.dashboard || 'Dashboard' }}
+                                        {{ t('Dashboard') }}
                                         </Link>
 
                                     </a-menu-item>
                                     <a-menu-divider />
                                     <a-menu-item key="logout">
 
-                                        <a href="#" @click.prevent="handleLogout">{{ translations.logout || 'Logout'}}</a>
+                                        <a href="#" @click.prevent="handleLogout">{{ t('Logout') }}</a>
                                     </a-menu-item>
                                 </a-menu>
                             </template>
@@ -207,12 +206,12 @@ const toggleSearch = () => {
                                     <a-menu>
                                         <a-menu-item key="login">
                                             <Link :href="route('login')" class="text-gray-600 hover:text-gray-900">
-                                            {{ translations.login || 'Login' }}
+                                            {{ t('Login') }}
                                             </Link>
                                         </a-menu-item>
                                         <a-menu-item key="register">
                                             <Link :href="route('register')" class="text-gray-600 hover:text-gray-900">
-                                            {{ translations.register || 'Register' }}
+                                            {{ t('Register') }}
                                             </Link>
                                         </a-menu-item>
                                     </a-menu>

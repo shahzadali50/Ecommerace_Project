@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, getCurrentInstance } from 'vue';
 import {
     HomeOutlined,
     ShopOutlined,
@@ -8,9 +8,8 @@ import {
     ShoppingCartOutlined,
 } from '@ant-design/icons-vue';
 const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as any)?.header || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 const currentPath = computed(() => page.url);
 
 
@@ -43,17 +42,17 @@ const toggleCart = () => {
             <Link :href="route('home')" class="flex flex-col items-center"
                 :class="currentPath === route('home', {}, false) ? 'text-black font-bold' : 'text-gray-600'">
             <HomeOutlined class="text-xl" />
-            <span class="text-xs mt-1">{{ translations.home || 'Home' }}</span>
+            <span class="text-xs mt-1">{{ t('Home') }}</span>
             </Link>
             <Link :href="route('all.products')" class="flex flex-col items-center"  :class="currentPath === route('all.products', {}, false) ? 'text-black font-bold' : 'text-gray-600'">
             <ShopOutlined class="text-xl" />
-            <span class="text-xs mt-1">{{ translations.shop || 'Shop' }}</span>
+            <span class="text-xs mt-1">{{ t('Shop') }}</span>
             </Link>
             <Link :href="route('wishlist')" class="flex flex-col items-center relative "
                 :class="currentPath === route('wishlist', {}, false) ? 'text-black font-bold' : 'text-gray-600'">
             <HeartOutlined class="text-xl" />
-            <span class="text-xs mt-1">{{ translations.whishlist || 'Whislist' }}</span>
-            
+            <span class="text-xs mt-1">{{ t('Wishlist') }}</span>
+
               <a-badge :count="wishlistCount" class="absolute right-[-3px] top-[-5px]"></a-badge>
             </Link>
 
@@ -61,7 +60,7 @@ const toggleCart = () => {
                 :class="[currentPath === route('cart.checkout', {}, false) || currentPath === route('cart.payment', {}, false) ? 'text-black font-bold' : 'text-gray-600']"
                 @click="toggleCart">
                 <ShoppingCartOutlined class="text-xl" />
-                <span class="text-xs mt-1">{{ translations.cart || 'Cart' }}</span>
+                <span class="text-xs mt-1">{{ t('Cart') }}</span>
                 <a-badge :count="totalCartQty" class="absolute left-[15px] top-[-5px]"></a-badge>
 
             </a>

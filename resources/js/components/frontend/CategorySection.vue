@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, getCurrentInstance } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { Row, Col } from 'ant-design-vue';
 import { Link } from "@inertiajs/vue3";
 
-
 const page = usePage();
-
-const translations = computed(() => {
-    return (page.props.translations as any)?.products || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const categories = computed(() => {
     return (page.props.categories as any[]) || [];
@@ -20,7 +17,7 @@ const categories = computed(() => {
   <section class="py-14">
     <div class="container mx-auto px-2 sm:px-4">
       <div class="text-center mb-8 sm:mb-12">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">{{ translations.shop_by_category || 'Shop By Category' }}</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">{{ t('Shop By Category') }}</h2>
       </div>
 
       <Row :gutter="[16, 16]">
@@ -35,8 +32,8 @@ const categories = computed(() => {
                     />
                 </Link>
             </div>
-            <h5 class="text-lg font-semibold my-1">{{ category.name }}</h5>
-            <p class="text-sm text-gray-500">{{ category.product_count }} {{ translations.products || 'Products' }}</p>
+            <h5 class="text-lg font-semibold my-1">{{ t(category.name) }}</h5>
+            <p class="text-sm text-gray-500">{{ category.product_count }} {{ t('Products') }}</p>
           </div>
         </Col>
       </Row>

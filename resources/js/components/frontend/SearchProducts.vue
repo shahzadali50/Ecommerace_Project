@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, getCurrentInstance } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
 
@@ -12,6 +12,9 @@ interface Product {
     sale_price: number;
     final_price: number;
 }
+
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const searchQuery = ref('');
 const searchResults = ref<Product[]>([]);
@@ -60,7 +63,7 @@ watch(searchQuery, (newQuery) => {
 
 // Handle product click to navigate to product detail page
 const selectProduct = (product: Product) => {
-    router.visit(route('product.detail', product.slug));
+    router.visit(route('product.detail', { slug: product.slug }));
     searchQuery.value = '';
     searchResults.value = [];
     showDropdown.value = false;
@@ -69,7 +72,7 @@ const selectProduct = (product: Product) => {
 
 <template>
     <div class="w-full md:w-64 relative">
-        <a-input-search v-model:value="searchQuery" placeholder="Search products..." :loading="loading"
+        <a-input-search v-model:value="searchQuery" :placeholder="t('Search products...')" :loading="loading"
             @input="searchProducts" class="focus:ring-2 focus:ring-blue-500" />
         <div v-if="showDropdown && searchResults.length"
             class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
@@ -99,7 +102,7 @@ const selectProduct = (product: Product) => {
         </div>
         <div v-if="showDropdown && !searchResults.length && !loading && searchQuery"
             class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg p-4 mt-1 text-gray-600">
-            We're sorry, no products match your search.
+            {{ t('We\'re sorry, no products match your search.') }}
         </div>
     </div>
 </template>

@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted, getCurrentInstance } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import CartItems from './CartItems.vue';
 
 const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as any)?.products || {};
-});
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 defineProps<{
     visible: boolean;
@@ -35,7 +34,7 @@ const formatPrice = (price: number) => {
 
 const goToCheckout = () => {
     router.visit(route("cart.checkout"));
-  
+
 };
 
 const closeDrawer = () => {
@@ -59,17 +58,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <a-drawer :title="translations.shopping_cart || 'Shopping Cart'" placement="right" :open="visible"
+    <a-drawer :title="t('Shopping Cart')" placement="right" :open="visible"
         @close="closeDrawer" :width="drawerWidth">
         <div class="flex flex-col h-full">
             <CartItems />
             <div v-if="cart && cart.length > 0" class="border-t p-4">
                 <div class="flex justify-between mb-4">
-                    <span class="font-medium">{{ translations.total || 'Total' }}:</span>
+                    <span class="font-medium">{{ t('Total') }}:</span>
                     <span class="font-bold text-primary">{{ formatPrice(total) }}</span>
                 </div>
                 <a-button class="btn-primary" block @click="goToCheckout">
-                    {{ translations.checkout || 'Proceed to Checkout' }}
+                    {{ t('Proceed to Checkout') }}
                 </a-button>
             </div>
         </div>

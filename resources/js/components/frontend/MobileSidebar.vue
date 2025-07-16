@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import { Link } from "@inertiajs/vue3";
 import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
-
-
+import { computed, getCurrentInstance } from 'vue';
 
 const page = usePage();
-const translations = computed(() => {
-    return (page.props.translations as any)?.header || {};
-});
-
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 defineProps<{
   visible: boolean;
@@ -38,27 +34,27 @@ const closeDrawer = () => {
         <a-menu mode="vertical">
           <a-menu-item key="home">
             <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">
-              {{ translations.home || 'Home' }}
+              {{ t('Home') }}
             </Link>
           </a-menu-item>
           <a-menu-item key="products">
             <Link :href="route('all.products')" class="text-gray-600 hover:text-gray-900">
-              {{ translations.shop || 'Shop' }}
+              {{ t('Shop') }}
             </Link>
           </a-menu-item>
           <a-menu-item key="categories">
             <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">
-              {{ translations.categories || 'Categories' }}
+              {{ t('Categories') }}
             </Link>
           </a-menu-item>
           <a-menu-item key="brands">
             <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">
-              {{ translations.brands || 'Brands' }}
+              {{ t('Brands') }}
             </Link>
           </a-menu-item>
           <a-menu-item key="about">
             <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">
-              {{ translations.about_us || 'About Us' }}
+              {{ t('About Us') }}
             </Link>
           </a-menu-item>
         </a-menu>
