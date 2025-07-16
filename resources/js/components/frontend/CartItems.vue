@@ -72,7 +72,7 @@ const removeItem = (productId: number) => {
                 <img :src="'/storage/' + item.thumnail_img" :alt="item.name" class="w-20 h-20 object-cover rounded">
                 <div class="flex-1">
                     <div>
-                        <h3 class="font-medium">{{ t('item.name') }}</h3>
+                        <h3 class="font-medium">{{ t(item.name) }}</h3>
                     </div>
                     <div class="flex items-center gap-2 mt-2">
                         <a-button size="small" @click="updateQuantity(item.id, 'decrease')"  :disabled="item.quantity <= 1">-</a-button>

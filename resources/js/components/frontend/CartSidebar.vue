@@ -25,7 +25,7 @@ const total = computed(() => {
 });
 
 const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-PK', {
         style: 'currency',
         currency: 'PKR',
         minimumFractionDigits: 2,

@@ -173,7 +173,7 @@ const isInWishlist = (productId: number) => {
                         </template>
                         <div>
                             <h3 class="text-[15px] sm:text-xl font-semibold text-gray-900 mb-1">
-                                {{ t('product.name') }}
+                                {{ t(product.name) }}
                             </h3>
                             <div class="flex justify-between items-center">
                                 <div class="flex flex-wrap">

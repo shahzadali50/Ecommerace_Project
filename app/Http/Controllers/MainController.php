@@ -23,17 +23,14 @@ class MainController extends Controller
     {
         try {
             $locale = session('locale', App::getLocale());
-            
-            // Load categories with product count and translations
+
+            // Load categories with product count
             $categories = Category::withCount('products')
-                ->with([
-                    'category_translations' => fn($q) => $q->where('lang', $locale),
-                ])
                 ->get()
-                ->map(function ($category) use ($locale) {
+                ->map(function ($category) {
                     return [
                         'id' => $category->id,
-                        'name' => $category->category_translations->first()?->name ?? $category->name,
+                        'name' => $category->name,
                         'image' => $category->image,
                         'slug' => $category->slug,
                         'product_count' => $category->products_count,
@@ -43,24 +40,21 @@ class MainController extends Controller
 
             // Load products with brand, category, and their translations for current locale
             $products = Product::where('status', 1)
-                ->with([
-                    'category' => fn($q) => $q->with(['category_translations' => fn($q) => $q->where('lang', $locale)]),
-                    'product_translations' => fn($q) => $q->where('lang', $locale),
-                ])
+                ->with(['category'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(8);
 
             // Transform products to include translated fields
-            $products->getCollection()->transform(function ($product) use ($locale) {
+            $products->getCollection()->transform(function ($product) {
                 return [
                     'id' => $product->id,
-                    'name' => $product->product_translations->first()?->name ?? $product->name,
+                    'name' => $product->name,
                     'slug' => $product->slug,
                     'stock' => $product->stock,
                     'thumnail_img' => $product->thumnail_img,
                     'sale_price' => $product->sale_price,
                     'final_price' => $product->final_price,
-                    'category_name' => $product->category?->category_translations->first()?->name ?? $product->category?->name ?? 'N/A',
+                    'category_name' => $product->category?->name ?? 'N/A',
                 ];
             });
               // ✅ Get wishlist product IDs if user is logged in
@@ -68,11 +62,10 @@ class MainController extends Controller
                 if (Auth::check()) {
                     $wishlist = Auth::user()->wishlist()->pluck('product_id')->toArray();
                 }
-            return Inertia::render('frontend/Index', [
+                        return Inertia::render('frontend/Index', [
                 'categories' => $categories,
                 'products' => $products,
-                  'wishlist' => $wishlist,
-                'translations' => __('messages'),
+                'wishlist' => $wishlist,
                 'locale' => $locale,
             ]);
         } catch (\Throwable $e) {
