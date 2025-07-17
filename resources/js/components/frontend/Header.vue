@@ -107,15 +107,17 @@ const toggleSearch = () => {
                                         <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
                                             {{ t('Popular Categories') }}
                                         </h3>
-                                        <ul class="space-y-2">
-                                            <li v-if="categories.length > 0" v-for="category in categories" :key="category.id">
-                                                <Link :href="route('all.products', { category: category.slug })" class="text-gray-600 hover:text-primary transition-colors duration-200 flex items-center justify-between">
-                                                    <div class="flex items-center">
-                                                        <span class="w-2 h-2 bg-primary rounded-full mr-3"></span>
-                                                        {{ t(category.name) }}
-                                                    </div>
-                                                </Link>
-                                            </li>
+                                        <ul class="space-y-2 max-h-64 overflow-y-auto pr-2">
+                                            <template v-if="categories.length > 0">
+                                                <li v-for="category in categories" :key="category.id">
+                                                    <Link :href="route('all.products', { category: category.slug })" class="text-gray-600 hover:text-primary transition-colors duration-200 flex items-center justify-between py-1">
+                                                        <div class="flex items-center">
+                                                            <span class="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                                                            {{ t(category.name) }}
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            </template>
                                             <li v-else class="text-gray-500 text-sm">
                                                 {{ t('No categories available') }}
                                             </li>
@@ -139,15 +141,17 @@ const toggleSearch = () => {
                                         <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
                                             {{ t('Popular Brands') }}
                                         </h3>
-                                        <ul class="space-y-2">
-                                            <li v-if="brands.length > 0" v-for="brand in brands" :key="brand.id">
-                                                <Link :href="route('all.products', { brand: brand.slug })" class="text-gray-600 hover:text-primary transition-colors duration-200 flex items-center justify-between">
-                                                    <div class="flex items-center">
-                                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-                                                        {{ t(brand.name) }}
-                                                    </div>
-                                                </Link>
-                                            </li>
+                                        <ul class="space-y-2 max-h-64 overflow-y-auto pr-2">
+                                            <template v-if="brands.length > 0">
+                                                <li v-for="brand in brands" :key="brand.id">
+                                                    <Link :href="route('all.products', { brand: brand.slug })" class="text-gray-600 hover:text-primary transition-colors duration-200 flex items-center justify-between py-1">
+                                                        <div class="flex items-center">
+                                                            <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                                            {{ t(brand.name) }}
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            </template>
                                             <li v-else class="text-gray-500 text-sm">
                                                 {{ t('No brands available') }}
                                             </li>
@@ -389,5 +393,24 @@ const toggleSearch = () => {
 
 .mega-menu a {
     transition: all 0.2s ease;
+}
+
+/* Custom scrollbar for mega menu */
+.mega-menu ul::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mega-menu ul::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.mega-menu ul::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.mega-menu ul::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 </style>
