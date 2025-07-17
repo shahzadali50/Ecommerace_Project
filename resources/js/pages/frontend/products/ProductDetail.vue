@@ -16,6 +16,7 @@ import {
     PlusOutlined
 } from '@ant-design/icons-vue';
 import LoginModal from "@/components/frontend/LoginModal.vue";
+import RelatedProducts from "@/components/frontend/RelatedProducts.vue";
 const page = usePage();
 const { appContext } = getCurrentInstance()!;
 const t = appContext.config.globalProperties.$t as (key: string) => string;
@@ -66,6 +67,7 @@ interface Product {
 
 const props = defineProps<{
     product: Product;
+    relatedProducts: any[];
 }>();
 
 const quantity = ref(1);
@@ -106,7 +108,6 @@ const decreaseQuantity = () => {
     }
 };
 const isAddingToCart = ref(false);
-
 const addToCart = () => {
     isAddingToCart.value = true;
     router.post(route('cart.add'), {
@@ -297,8 +298,18 @@ const addToCart = () => {
 
                     <div class="py-6 prose max-w-none">
                         <p>{{ t(product.description) }}</p>
+
                     </div>
                 </div>
+            </div>
+        </section>
+        <section class="my-14">
+            <div class="container mx-auto px-4">
+                <Row >
+                    <Col :xs="24" :lg="24">
+                        <RelatedProducts :related-products="relatedProducts" />
+                    </Col>
+                </Row>
             </div>
         </section>
         <LoginModal v-model:open="isLoginModalVisible" :canResetPassword="false" />

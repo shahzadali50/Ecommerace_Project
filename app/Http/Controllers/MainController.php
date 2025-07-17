@@ -91,6 +91,24 @@ class MainController extends Controller
             if (Auth::check()) {
                 $wishlist = Auth::user()->wishlist()->pluck('product_id')->toArray();
             }
+               // Get related products (same category, excluding this product)
+                $relatedProducts = Product::where('category_id', $product->category_id)
+                ->where('id', '!=', $product->id)
+                ->latest()
+                ->take(5) // limit to 4, you can change
+                ->get()
+                ->map(function ($related) {
+                    return [
+                        'id' => $related->id,
+                        'name' => $related->name,
+                        'slug' => $related->slug,
+                        'category_name' => $related->category?->name ?? 'N/A',
+                        'sale_price' => $related->sale_price,
+                        'final_price' => $related->final_price,
+                        'stock' => $related->stock,
+                        'thumbnail_image' => $related->thumnail_img ? asset("storage/{$related->thumnail_img}") : null,
+                    ];
+                });
 
             return Inertia::render('frontend/products/ProductDetail', [
                 'product' => [
@@ -113,6 +131,7 @@ class MainController extends Controller
                     )->map(fn($img) => asset("storage/" . trim($img)))->toArray(),
                     'category_name' => $product->category?->name ?? 'N/A',
                 ],
+                'relatedProducts' => $relatedProducts,
                 'wishlist' => $wishlist,
                 'locale' => $locale,
             ]);
