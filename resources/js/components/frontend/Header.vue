@@ -34,6 +34,14 @@ const wishlist = computed(() => {
 });
 const wishlistCount = computed(() => wishlist.value.length);
 
+const categories = computed(() => {
+    return page.props.global_categories as any[] || [];
+});
+
+const brands = computed(() => {
+    return page.props.global_brands as any[] || [];
+});
+
 
 const page = usePage();
 const { appContext } = getCurrentInstance()!;
@@ -87,12 +95,68 @@ const toggleSearch = () => {
                     <Link :href="route('all.products')" class="text-gray-600 hover:text-gray-900 text-[18px]">
                     {{ t('Shop') }}
                     </Link>
-                    <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-[18px]">
-                    {{ t('Categories') }}
-                    </Link>
-                    <Link :href="route('home')" class="text-gray-600 hover:text-gray-900 text-[18px]">
-                    {{ t('Brands') }}
-                    </Link>
+                    <a-dropdown trigger="hover" placement="bottomCenter">
+                        <a class="text-gray-600 hover:text-gray-900 text-[18px] cursor-pointer">
+                            {{ t('Categories') }}
+                        </a>
+                        <template #overlay>
+                            <div class="mega-menu bg-white shadow-lg border border-gray-200 rounded-lg p-6 min-w-[300px]">
+                                <div class="grid grid-cols-1 gap-6">
+                                    <!-- Categories -->
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                                            {{ t('Popular Categories') }}
+                                        </h3>
+                                        <ul class="space-y-2">
+                                            <li v-if="categories.length > 0" v-for="category in categories" :key="category.id">
+                                                <Link :href="route('all.products', { category: category.slug })" class="text-gray-600 hover:text-primary transition-colors duration-200 flex items-center justify-between">
+                                                    <div class="flex items-center">
+                                                        <span class="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                                                        {{ t(category.name) }}
+                                                    </div>
+                                                </Link>
+                                            </li>
+                                            <li v-else class="text-gray-500 text-sm">
+                                                {{ t('No categories available') }}
+                                            </li>
+                                        </ul>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </template>
+                    </a-dropdown>
+                    <a-dropdown trigger="hover" placement="bottomCenter">
+                        <a class="text-gray-600 hover:text-gray-900 text-[18px] cursor-pointer">
+                            {{ t(' Brands') }}
+                        </a>
+                        <template #overlay>
+                            <div class="mega-menu bg-white shadow-lg border border-gray-200 rounded-lg p-6 min-w-[300px]">
+                                <div class="grid grid-cols-1 gap-6">
+                                    <!-- Brands -->
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                                            {{ t('Popular Brands') }}
+                                        </h3>
+                                        <ul class="space-y-2">
+                                            <li v-if="brands.length > 0" v-for="brand in brands" :key="brand.id">
+                                                <Link :href="route('all.products', { brand: brand.slug })" class="text-gray-600 hover:text-primary transition-colors duration-200 flex items-center justify-between">
+                                                    <div class="flex items-center">
+                                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                                        {{ t(brand.name) }}
+                                                    </div>
+                                                </Link>
+                                            </li>
+                                            <li v-else class="text-gray-500 text-sm">
+                                                {{ t('No brands available') }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </a-dropdown>
                 </nav>
 
 
@@ -289,5 +353,41 @@ const toggleSearch = () => {
 .fade-slide-leave-to {
     opacity: 0;
     transform: translateY(-10px);
+}
+
+/* Mega Menu Styles */
+.mega-menu {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ensure mega menu appears above other elements */
+:deep(.ant-dropdown) {
+    z-index: 1000;
+}
+
+:deep(.ant-dropdown-menu) {
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effects for mega menu items */
+.mega-menu a:hover {
+    transform: translateX(5px);
+}
+
+.mega-menu a {
+    transition: all 0.2s ease;
 }
 </style>

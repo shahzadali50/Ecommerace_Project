@@ -32,9 +32,10 @@ class Brand extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
     public function products()
-{
-    return $this->hasMany(Product::class, 'brand_id');
-}
+    {
+        return $this->hasMany(Product::class, 'brand_id');
+    }
+
 public function brand_translations(){
     return $this->hasMany(BrandTranslation::class);
 }

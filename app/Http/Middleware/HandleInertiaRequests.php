@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Inertia\Middleware;
 use App\Models\Wishlist;
+use App\Models\Category;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Auth;
@@ -54,10 +56,16 @@ class HandleInertiaRequests extends Middleware
             'wishlist' => fn () => Auth::check()
             ? Wishlist::where('user_id', Auth::id())->pluck('product_id')
             : [],
-
-
-
-
+            // ✅ Share categories globally
+            'global_categories' =>fn () => Category::whereHas('products')
+            ->select('id', 'name', 'slug')
+            ->orderBy('id')
+            ->get(),
+            // ✅ Share brands globally
+            'global_brands' => fn () => Brand::whereHas('products')
+            ->select('id', 'name', 'slug')
+            ->orderBy('id')
+            ->get(),
         ];
     }
 }
