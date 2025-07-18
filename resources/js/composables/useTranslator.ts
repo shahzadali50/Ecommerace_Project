@@ -7,21 +7,23 @@ export function useTranslator(locale: string) {
   const translations = ref<Record<string, string>>({});
   const pendingTexts = new Set<string>();
   const loading = ref(false);
+  const isFetching = ref(false);
 
+  // Load from cache if available
   const loadFromCacheOrFetch = () => {
     if (globalCache.has(locale)) {
       translations.value = globalCache.get(locale)!;
-      return;
     }
   };
 
+  // Fetch translations for pending texts
   const fetchTranslations = async () => {
-    if (pendingTexts.size === 0) return;
+    if (pendingTexts.size === 0 || isFetching.value) return;
 
     const texts = Array.from(pendingTexts);
     pendingTexts.clear();
 
-    loading.value = true;
+    isFetching.value = true;
 
     try {
       const { data } = await axios.post(route('translate'), {
@@ -29,31 +31,32 @@ export function useTranslator(locale: string) {
         target: locale,
       });
 
-      translations.value = { ...translations.value, ...data.translations };
-      globalCache.set(locale, translations.value);
+      const newTranslations = { ...translations.value, ...data.translations };
+      translations.value = newTranslations;
+      globalCache.set(locale, newTranslations);
     } catch (err) {
       console.error('Translation error', err);
-      texts.forEach(t => translations.value[t] = t);
+      texts.forEach(t => translations.value[t] = t); // fallback
     } finally {
-      loading.value = false;
+      isFetching.value = false;
     }
   };
 
+  // Translate function
   const t = (text: string) => {
-    if (!translations.value[text]) {
-      pendingTexts.add(text);
-      debounceFetch();
-      return text;
+    if (translations.value[text]) {
+      return translations.value[text];
     }
-    return translations.value[text];
+
+    if (!pendingTexts.has(text)) {
+      pendingTexts.add(text);
+      fetchTranslations(); // Call immediately on new text
+    }
+
+    return text;
   };
 
-  let debounceTimer: number | undefined;
-  const debounceFetch = () => {
-    if (debounceTimer) clearTimeout(debounceTimer);
-    debounceTimer = window.setTimeout(() => fetchTranslations(), 50);
-  };
-
+  // Clear pendingTexts and reset translations on locale change
   watch(
     () => locale,
     (newLocale) => {

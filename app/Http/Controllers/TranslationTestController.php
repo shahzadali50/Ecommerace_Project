@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Cache;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class TranslationTestController extends Controller
@@ -51,7 +52,7 @@ class TranslationTestController extends Controller
         $toTranslate = [];
 
         foreach ($texts as $text) {
-            $cached = \Cache::get("translation:{$targetLanguage}:" . md5($text));
+            $cached = Cache::get("translation:{$targetLanguage}:" . md5($text));
             if ($cached) {
                 $result[$text] = $cached;
             } else {
