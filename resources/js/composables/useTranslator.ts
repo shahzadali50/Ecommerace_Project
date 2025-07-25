@@ -15,7 +15,6 @@ export function useTranslator(locale: string) {
       translations.value = globalCache.get(locale)!;
     }
   };
-
   // Fetch translations for pending texts
   const fetchTranslations = async () => {
     console.log();
