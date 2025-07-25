@@ -14,11 +14,9 @@ import {
     PoweroffOutlined,
     UsergroupAddOutlined
 } from '@ant-design/icons-vue';
-// Get translations from page props with proper typing
+
+// Get user data from page props
 const page = usePage<SharedData>();
-const translations = computed(() =>
-    (page.props.translations as { sidebar: Record<string, string> }).sidebar
-);
 const user = computed(() => page.props.auth?.user);
 const isAdmin = computed(() => user.value?.role === 'admin');
 const isUser = computed(() => user.value?.role === 'user');
@@ -28,14 +26,11 @@ defineProps<{ collapsed: boolean }>();
 const selectedKeys = ref<string[]>([]);
 const currentPath = computed(() => page.url);
 
-
-
-
 watch(currentPath, (newUrl) => {
     selectedKeys.value = [newUrl];
 }, { immediate: true });
 
-// logot function
+// logout function
 const handleLogout = () => {
     router.post(route('logout'));
 };
@@ -54,14 +49,14 @@ const handleLogout = () => {
                         :class="{ 'active': currentPath.startsWith(route('admin.dashboard', {}, false)) }">
                         <Link :href="route('admin.dashboard')">
                         <DatabaseOutlined />
-                        <span>{{ translations.dashboard || 'Dashboard' }}</span>
+                        <span>Dashboard</span>
                         </Link>
                     </a-menu-item>
                     <a-menu-item key="2"
                         :class="{ 'active': currentPath.startsWith(route('admin.login.user', {}, false)) }">
                         <Link :href="route('admin.login.user')">
                             <UsergroupAddOutlined />
-                        <span>{{ translations.users || 'Users' }}</span>
+                        <span>Users</span>
                         </Link>
                     </a-menu-item>
 
@@ -70,7 +65,7 @@ const handleLogout = () => {
                         :class="{ 'active': currentPath.startsWith(route('admin.categories', {}, false)) }">
                         <Link :href="route('admin.categories')">
                         <AppstoreOutlined />
-                        <span>{{ translations.categories || 'Categories' }}</span>
+                        <span>Categories</span>
                         </Link>
                     </a-menu-item>
 
@@ -79,7 +74,7 @@ const handleLogout = () => {
                         :class="{ 'active': currentPath.startsWith(route('admin.brands', {}, false)) }">
                         <Link :href="route('admin.brands')">
                         <TrademarkCircleOutlined />
-                        <span>{{ translations.brands || 'Brands' }}</span>
+                        <span>Brands</span>
                         </Link>
                     </a-menu-item>
 
@@ -88,7 +83,7 @@ const handleLogout = () => {
                         :class="{ 'active': currentPath.startsWith(route('admin.products', {}, false)) }">
                         <Link :href="route('admin.products')">
                         <ShoppingOutlined />
-                        <span>{{ translations.products || 'Products' }}</span>
+                        <span>Products</span>
                         </Link>
                     </a-menu-item>
                     <!-- Order List -->
@@ -96,7 +91,7 @@ const handleLogout = () => {
                         :class="{ 'active': currentPath.startsWith(route('admin.order.list', {}, false)) }">
                         <Link :href="route('admin.order.list')">
                         <OrderedListOutlined />
-                        <span>{{ translations.order_list || 'Order List' }}</span>
+                        <span>Order List</span>
                         </Link>
                     </a-menu-item>
                     <!-- Profile -->
@@ -104,20 +99,20 @@ const handleLogout = () => {
                         :class="{ 'active': currentPath.startsWith(route('profile.edit', {}, false)) }">
                         <Link :href="route('profile.edit')">
                         <SettingOutlined />
-                        <span>{{ translations.profile || 'Profile' }}</span>
+                        <span>Profile</span>
                         </Link>
                     </a-menu-item>
                         <!-- Website -->
                     <a-menu-item key="8">
                         <Link :href="route('home')">
                             <AppstoreOutlined />
-                            <span>{{ translations.website || 'Website' }}</span>
+                            <span>Website</span>
                         </Link>
                     </a-menu-item>
                     <a-menu-item key="9">
                         <a href="#" @click.prevent="handleLogout">
                             <PoweroffOutlined />
-                            {{ translations.logout || 'Logout' }}
+                            Logout
                         </a>
                     </a-menu-item>
                 </a-menu>
@@ -129,27 +124,27 @@ const handleLogout = () => {
                     <a-menu-item key="1">
                         <Link :href="route('home')">
                             <AppstoreOutlined />
-                            <span>{{ translations.website || 'Website' }}</span>
+                            <span>Website</span>
                         </Link>
                     </a-menu-item>
                     <a-menu-item key="2"
                         :class="{ 'active': currentPath.startsWith(route('user.order.list', {}, false)) }">
                         <Link :href="route('user.order.list')">
                         <OrderedListOutlined />
-                        <span>{{ translations.order_list || 'Order List' }}</span>
+                        <span>Order List</span>
                         </Link>
                     </a-menu-item>
                     <a-menu-item key="2"
                         :class="{ 'active': currentPath.startsWith(route('profile.edit', {}, false)) }">
                         <Link :href="route('profile.edit')">
                         <SettingOutlined />
-                        <span>{{ translations.profile || 'Profile' }}</span>
+                        <span>Profile</span>
                         </Link>
                     </a-menu-item>
                     <a-menu-item key="3">
                         <a href="#" @click.prevent="handleLogout">
                             <PoweroffOutlined />
-                            {{ translations.logout || 'Logout' }}
+                            Logout
                         </a>
                     </a-menu-item>
                 </a-menu>
