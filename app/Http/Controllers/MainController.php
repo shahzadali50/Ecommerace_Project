@@ -22,7 +22,8 @@ class MainController extends Controller
     public function index()
     {
         try {
-            $locale = session('locale', App::getLocale());
+            $locale = session()->get('locale');
+            app()->setLocale($locale);
 
             // Load categories with product count
             $categories = Category::withCount('products')

@@ -5,19 +5,23 @@ import { Head } from '@inertiajs/vue3';
 import { computed, getCurrentInstance } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { Row, Col } from 'ant-design-vue';
+import type { SharedData } from '@/types';
 
-const page = usePage();
+const page = usePage<SharedData>();
 const { appContext } = getCurrentInstance()!;
 const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 // Compute the product count text dynamically
 const productCountText = computed(() => {
-  const products = page.props.products as any;
+  const products = page.props.products;
   if (!products || !products.data) return t('Showing 0 of 0 Products');
   const total = products.total || 0; // Total products from database
   const from = products.from || 1; // Starting product number
   const to = products.to || products.data.length; // Ending product number
-  return t('Showing :from-:to of :total Products').replace(':from', from).replace(':to', to).replace(':total', total);
+  return t('Showing :from-:to of :total Products')
+    .replace(':from', from.toString())
+    .replace(':to', to.toString())
+    .replace(':total', total.toString());
 });
 </script>
 

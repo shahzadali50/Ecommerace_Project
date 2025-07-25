@@ -8,7 +8,7 @@ export function useTranslator(locale: string) {
   const pendingTexts = new Set<string>();
   const loading = ref(false);
   const isFetching = ref(false);
-
+  console.log(' ===Current Language====', locale);
   // Load from cache if available
   const loadFromCacheOrFetch = () => {
     if (globalCache.has(locale)) {
@@ -18,6 +18,7 @@ export function useTranslator(locale: string) {
 
   // Fetch translations for pending texts
   const fetchTranslations = async () => {
+    console.log();
     if (pendingTexts.size === 0 || isFetching.value) return;
 
     const texts = Array.from(pendingTexts);
@@ -62,6 +63,7 @@ export function useTranslator(locale: string) {
     (newLocale) => {
       if (globalCache.has(newLocale)) {
         translations.value = globalCache.get(newLocale)!;
+
       } else {
         translations.value = {};
       }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Cache;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class TranslationTestController extends Controller

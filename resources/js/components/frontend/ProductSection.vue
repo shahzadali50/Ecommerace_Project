@@ -26,6 +26,13 @@ interface Category {
     product_count: number;
 }
 
+interface Brand {
+    id: number;
+    name: string;
+    slug: string;
+    product_count: number;
+}
+
 // Props
 const props = defineProps<{
     title?: string;
@@ -34,6 +41,7 @@ const props = defineProps<{
     showFilter?: boolean;
     showPagination?: boolean;
     categories?: Category[];
+    brands?: Brand[];
     selectedCategory?: string | null;
     selectedBrand?: string | null;
     showTitle?: boolean;
@@ -118,9 +126,9 @@ const isInWishlist = (productId: number) => {
 <template>
     <section>
         <div class="container  mx-auto">
-            <FilterProduct v-if="props.showFilter === true" :categories="page.props.categories"
-                :selectedCategory="page.props.selectedCategory" :brands="page.props.brands"
-                :selectedBrand="page.props.selectedBrand" />
+            <FilterProduct v-if="props.showFilter === true" :categories="props.categories"
+                :selectedCategory="props.selectedCategory" :brands="props.brands"
+                :selectedBrand="props.selectedBrand" />
         </div>
     </section>
     <section :class="['', props.sectionClass]">

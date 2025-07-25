@@ -7,6 +7,7 @@ import CartSidebar from '@/components/frontend/CartSidebar.vue';
 import MobileSidebar from '@/components/frontend/MobileSidebar.vue';
 import { Link } from "@inertiajs/vue3";
 import MobileBottomNav from './MobileBottomNav.vue';
+import type { SharedData } from '@/types';
 
 import {
     MenuOutlined,
@@ -18,6 +19,10 @@ import {
 } from '@ant-design/icons-vue';
 import SearchProducts from './SearchProducts.vue';
 
+const page = usePage<SharedData>();
+const { appContext } = getCurrentInstance()!;
+const t = appContext.config.globalProperties.$t as (key: string) => string;
+
 const cart = computed(() => {
     const data = page.props.cart as any[] || [];
     return data.map(item => ({
@@ -28,7 +33,7 @@ const cart = computed(() => {
 const totalCartQty = computed(() => {
     return cart.value.reduce((sum, item) => sum + (item.quantity || 0), 0);
 });
-// whislistchCount
+// wishlistCount
 const wishlist = computed(() => {
     return page.props.wishlist as number[] || [];
 });
@@ -42,15 +47,9 @@ const brands = computed(() => {
     return page.props.global_brands as any[] || [];
 });
 
-
-const page = usePage();
-const { appContext } = getCurrentInstance()!;
-const t = appContext.config.globalProperties.$t as (key: string) => string;
-
-const { props } = usePage();
 const mobileMenuOpen = ref(false);
 const cartDrawerVisible = ref(false);
-const isAuthenticated = computed(() => props.auth?.user);
+const isAuthenticated = computed(() => page.props.auth?.user);
 
 const toggleMobileMenu = () => {
     mobileMenuOpen.value = !mobileMenuOpen.value;
@@ -95,7 +94,7 @@ const toggleSearch = () => {
                     <Link :href="route('all.products')" class="text-gray-600 hover:text-gray-900 text-[18px]">
                     {{ t('Shop') }}
                     </Link>
-                    <a-dropdown trigger="hover" placement="bottomCenter">
+                    <a-dropdown trigger="hover" placement="bottom">
                         <a class="text-gray-600 hover:text-gray-900 text-[18px] cursor-pointer">
                             {{ t('Categories') }}
                         </a>
@@ -129,7 +128,7 @@ const toggleSearch = () => {
                             </div>
                         </template>
                     </a-dropdown>
-                    <a-dropdown trigger="hover" placement="bottomCenter">
+                    <a-dropdown trigger="hover" placement="bottom">
                         <a class="text-gray-600 hover:text-gray-900 text-[18px] cursor-pointer">
                             {{ t(' Brands') }}
                         </a>
