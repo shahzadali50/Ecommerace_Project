@@ -83,7 +83,7 @@ const getStatusColor = (status: string) => {
 
                     <!-- Main Content -->
                     <Col :xs="24" :sm="24" :md="16" :lg="18" :xl="18">
-                    <div class="bg-white rounded-lg shadow-md p-4 sm:p-6">
+                    <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 overflow-x-auto">
                         <a-row>
                             <a-col :span="24">
                                 <a-result v-if="page.props.flash?.success" status="success"
