@@ -160,6 +160,9 @@ const toggleSearch = () => {
                             </div>
                         </template>
                     </a-dropdown>
+                    <Link :href="route('track.order')" class="text-gray-600 hover:text-gray-900 text-[18px]">
+                    {{ t('Trck Order') }}
+                    </Link>
                 </nav>
 
 
@@ -243,7 +246,8 @@ const toggleSearch = () => {
                             <a-button class="text-[18px] p-0" type="text" shape="circle">
 
                                 <template #icon>
-                                    <UserOutlined />
+                                    <!-- <UserOutlined /> -->
+                                    <img src="\assets\images\login-user.svg" alt="Logo" class="h-8 w-auto" />
                                 </template>
                             </a-button>
                             <template #overlay>
@@ -267,6 +271,7 @@ const toggleSearch = () => {
                                 <a-button class="text-[18px] p-0" type="text" shape="circle">
                                     <template #icon>
                                         <UserOutlined />
+
                                     </template>
                                 </a-button>
                                 <template #overlay>

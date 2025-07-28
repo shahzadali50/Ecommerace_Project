@@ -29,6 +29,8 @@ Route::post('/create-checkout-session', [StripeController::class, 'createCheckou
 Route::get('/payment/cancel', [StripeController::class, 'paymentCancel'])->name('stripe.cancel');
 Route::get('/payment/success', [StripeController::class, 'paymentSuccess'])->name('stripe.success');
 Route::get('/products/search', [ProductController::class, 'productSearch'])->name('products.search');
+Route::get('/track-order', [MainController::class, 'trackOrder'])->name('track.order');
+Route::post('/track-order', [MainController::class, 'trackOrderPost'])->name('track.order.post');
 
 Route::get('/translation-test', [TranslationTestController::class, 'index'])->name('translation.test');
 Route::post('/translate', [TranslationTestController::class, 'translate'])->name('translate');

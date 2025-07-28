@@ -61,6 +61,7 @@ const orderGenerate = () => {
             <div class="container mx-auto px-2 sm:px-4">
                 <Link :href="route('cart.checkout')" class="flex items-center mb-2">
                 <ArrowLeftOutlined />{{ t('Back') }}</Link>
+
                 <a-alert class="my-1" v-if="page.props.flash?.success" :message="page.props.flash.success"
                     type="success" show-icon />
                 <Row v-if="!cart || cart.length === 0" class="py-10">

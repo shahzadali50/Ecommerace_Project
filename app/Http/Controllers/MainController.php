@@ -371,4 +371,88 @@ public function getUser(){
         return redirect()->back()->with('error', 'Something went wrong while loading users.');
     }
 }
+
+public function trackOrder()
+{
+    return Inertia::render('frontend/TrackOrder', [
+        'order' => null,
+        'found' => false,
+        'order_number' => ''
+    ]);
+}
+
+public function trackOrderPost(Request $request)
+{
+$request->validate([
+    'order_number' => 'required|string|max:20',
+]);
+
+    try {
+        // Search for order by order_id
+        $order = Order::where('order_id', trim($request->order_number))
+            ->with([
+                'saleProducts:id,order_id,product_id,qty,sale_price,total_price',
+                'saleProducts.product:id,name,thumnail_img'
+            ])
+            ->first();
+
+        if (!$order) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Order not found. Please verify your order number and try again.');
+        }
+
+        // Optimized data transformation
+        $orderData = [
+            'id' => $order->id,
+            'order_id' => $order->order_id,
+            'status' => $order->status,
+            'name' => $order->name,
+            'email' => $order->email,
+            'phone_number' => $order->phone_number,
+            'address' => $order->address,
+            'city' => $order->city,
+            'state' => $order->state,
+            'postal_code' => $order->postal_code,
+            'country' => $order->country,
+            'order_notes' => $order->order_notes,
+            'subtotal_price' => $order->subtotal_price,
+            'total_price' => $order->total_price,
+            'payment_status' => $order->payment_status,
+            'payment_method' => $order->payment_method,
+            'created_at' => $order->created_at->format('Y-m-d H:i:s'),
+            'sale_products' => $order->saleProducts->map(function ($saleProduct) {
+                return [
+                    'id' => $saleProduct->id,
+                    'sale_price' => number_format($saleProduct->sale_price, 2),
+                    'qty' => $saleProduct->qty,
+                    'total_price' => number_format($saleProduct->total_price, 2),
+                    'product' => [
+                        'id' => $saleProduct->product->id,
+                        'name' => $saleProduct->product->name,
+                        'thumnail_img' => $saleProduct->product->thumnail_img,
+                    ]
+                ];
+            })
+        ];
+
+        return Inertia::render('frontend/TrackOrder', [
+            'order' => $orderData,
+            'found' => true,
+            'order_number' => $request->order_number
+        ]);
+
+    } catch (\Exception $e) {
+        \Log::error('Order tracking failed: ' . $e->getMessage(), [
+            'order_number' => $request->order_number,
+            'user_ip' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        return redirect()->back()
+            ->withInput()
+            ->with('error', 'Something went wrong while tracking your order. Please try again.');
+    }
+}
+
 }
