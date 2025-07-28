@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import UserLayout from "@/layouts/UserLayout.vue";
 import { Head } from "@inertiajs/vue3";
-import { Row, Col, Modal } from "ant-design-vue";
+import { Row, Col } from "ant-design-vue";
 import { useForm, usePage } from "@inertiajs/vue3";
-import { LoaderCircle, Search } from "lucide-vue-next";
 import dayjs from "dayjs";
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import type { PageProps as InertiaPageProps } from '@inertiajs/core';
 
 interface Order {
@@ -22,7 +21,7 @@ interface Order {
     country: string;
     order_notes: string;
     subtotal_price: string;
-    total_price: string;
+    total_price: number;
     payment_status: string;
     payment_method: string;
     created_at: string;
@@ -98,6 +97,14 @@ const trackOrder = () => {
         }
     });
 };
+const formatPrice = (price: number | string) => {
+    const numPrice = typeof price === 'string' ? parseFloat(price) || 0 : price;
+    return new Intl.NumberFormat('en-PK', {
+        style: 'currency',
+        currency: 'PKR',
+        minimumFractionDigits: 2,
+    }).format(numPrice);
+};
 
 </script>
 
@@ -130,7 +137,7 @@ const trackOrder = () => {
         <section>
             <div class="container mx-auto">
                 <Row class="flex justify-center">
-                    <Col :lg="16"  :sm="22">
+                    <Col :lg="16" :sm="22" :xs="22">
 
 
                     <!-- Search Form -->
@@ -203,14 +210,14 @@ const trackOrder = () => {
                                 </a-col>
                                 <a-col :xs="24" :sm="12">
                                     <p class="mb-2"><span class="font-semibold">Address:</span> {{ props.order?.address
-                                    }}</p>
+                                        }}</p>
                                     <p class="mb-2"><span class="font-semibold">City:</span> {{ props.order?.city }}</p>
                                     <p class="mb-2"><span class="font-semibold">State:</span> {{ props.order?.state }}
                                     </p>
                                     <p class="mb-2"><span class="font-semibold">Postal Code:</span> {{
                                         props.order?.postal_code }}</p>
                                     <p class="mb-2"><span class="font-semibold">Country:</span> {{ props.order?.country
-                                    }}</p>
+                                        }}</p>
                                 </a-col>
                             </a-row>
                             <div v-if="props.order?.order_notes" class="mt-2">
@@ -244,7 +251,7 @@ const trackOrder = () => {
                                         <td class="py-2">{{ sale.product.name }}</td>
                                         <td class="py-2">{{ sale.sale_price }}</td>
                                         <td class="py-2">{{ sale.qty }}</td>
-                                        <td class="py-2">{{ sale.total_price }}</td>
+                                        <td class="py-2">{{ formatPrice(sale.total_price) }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -253,12 +260,10 @@ const trackOrder = () => {
                         <!-- Order Summary -->
                         <div class="border-gray-500 border my-4"></div>
                         <div class="my-3">
-                            <h4 class="mb-2">Subtotal: <span class="font-bold text-primary">${{
-                                props.order?.subtotal_price }}</span></h4>
+                            <h4 class="mb-2">Subtotal: <span class="font-bold text-primary">{{ formatPrice(props.order?.subtotal_price || '0') }}</span></h4>
                             <h4 class="mb-2">Shipping Charges: <span class="font-bold text-primary">Free Delivery</span>
                             </h4>
-                            <h4 class="mb-2">Total Price: <span class="font-bold text-primary">${{
-                                props.order?.total_price }}</span></h4>
+                            <h4 class="mb-2">Total Price: <span class="font-bold text-primary">{{ formatPrice(props.order?.total_price || 0) }}</span></h4>
                         </div>
                     </div>
                     </Col>

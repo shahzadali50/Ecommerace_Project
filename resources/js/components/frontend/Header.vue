@@ -160,9 +160,6 @@ const toggleSearch = () => {
                             </div>
                         </template>
                     </a-dropdown>
-                    <Link :href="route('track.order')" class="text-gray-600 hover:text-gray-900 text-[18px]">
-                    {{ t('Trck Order') }}
-                    </Link>
                 </nav>
 
 
@@ -182,16 +179,23 @@ const toggleSearch = () => {
                             <a-button class="text-[18px] p-0" type="text" shape="circle">
 
                                 <template #icon>
-                                    <UserOutlined />
+                                    <!-- <UserOutlined /> -->
+                                    <img src="\assets\images\login-user.svg" alt="Logo" class="h-8 w-auto mt-1" />
+
                                 </template>
                             </a-button>
                             <template #overlay>
                                 <a-menu>
+                                    <a-menu-item key="track-order">
+                                        <Link :href="route('track.order')" class="text-gray-600 hover:text-gray-900">
+                                        {{ t('Track Order') }}
+                                        </Link>
+                                        </a-menu-item>
+                                    <a-menu-divider />
                                     <a-menu-item key="profile">
                                         <Link :href="route('dashboard')" class="text-gray-600 hover:text-gray-900">
                                         {{ t('Dashboard') }}
                                         </Link>
-
                                     </a-menu-item>
                                     <a-menu-divider />
                                     <a-menu-item key="logout">
@@ -209,11 +213,18 @@ const toggleSearch = () => {
                                 </a-button>
                                 <template #overlay>
                                     <a-menu>
+                                        <a-menu-item key="track-order">
+                                            <Link :href="route('track.order')" class="text-gray-600 hover:text-gray-900">
+                                            {{ t('Track Order') }}
+                                            </Link>
+                                        </a-menu-item>
+                                        <a-menu-divider />
                                         <a-menu-item key="login">
                                             <Link :href="route('login')" class="text-gray-600 hover:text-gray-900">
                                             {{ t('Login') }}
                                             </Link>
                                         </a-menu-item>
+                                        <a-menu-divider />
                                         <a-menu-item key="register">
                                             <Link :href="route('register')" class="text-gray-600 hover:text-gray-900">
                                             {{ t('Register') }}
@@ -247,18 +258,24 @@ const toggleSearch = () => {
 
                                 <template #icon>
                                     <!-- <UserOutlined /> -->
-                                    <img src="\assets\images\login-user.svg" alt="Logo" class="h-8 w-auto" />
+                                    <img src="\assets\images\login-user.svg" alt="Logo" class="h-8 w-auto mt-1" />
                                 </template>
                             </a-button>
                             <template #overlay>
                                 <a-menu>
+                                    <a-menu-item key="track-order">
+                                            <Link :href="route('track.order')" class="text-gray-600 hover:text-gray-900">
+                                            {{ t('Track Order') }}
+                                            </Link>
+                                        </a-menu-item>
+                                    <a-menu-divider />
                                     <a-menu-item key="profile">
                                         <Link :href="route('dashboard')" class="text-gray-600 hover:text-gray-900">
                                         {{ t('Dashboard') }}
                                         </Link>
-
                                     </a-menu-item>
                                     <a-menu-divider />
+
                                     <a-menu-item key="logout">
 
                                         <a href="#" @click.prevent="handleLogout">{{ t('Logout') }}</a>
@@ -276,11 +293,18 @@ const toggleSearch = () => {
                                 </a-button>
                                 <template #overlay>
                                     <a-menu>
+                                        <a-menu-item key="track-order">
+                                            <Link :href="route('track.order')" class="text-gray-600 hover:text-gray-900">
+                                            {{ t('Track Order') }}
+                                            </Link>
+                                        </a-menu-item>
+                                        <a-menu-divider />
                                         <a-menu-item key="login">
                                             <Link :href="route('login')" class="text-gray-600 hover:text-gray-900">
                                             {{ t('Login') }}
                                             </Link>
                                         </a-menu-item>
+                                        <a-menu-divider />
                                         <a-menu-item key="register">
                                             <Link :href="route('register')" class="text-gray-600 hover:text-gray-900">
                                             {{ t('Register') }}

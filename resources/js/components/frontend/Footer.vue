@@ -119,6 +119,9 @@ const subscribe = () => {
             <li>
               <Link :href="route('home')" class="text-gray-600 hover:text-gray-900">{{ t('About Us') }}</Link>
             </li>
+            <li>
+              <Link :href="route('track.order')" class="text-gray-600 hover:text-gray-900">{{ t('Track Order') }}</Link>
+            </li>
           </ul>
         </div>
 
