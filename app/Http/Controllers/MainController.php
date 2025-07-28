@@ -455,4 +455,11 @@ $request->validate([
     }
 }
 
+public function orderList()
+{
+    return Inertia::render('frontend/order/UserOrderList', [
+    ]);
+
+}
+
 }

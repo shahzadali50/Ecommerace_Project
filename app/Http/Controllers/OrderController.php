@@ -953,7 +953,7 @@ public function orderGenerate(Request $request)
                 ->latest()
                 ->get();
 
-            return Inertia::render('frontend/order/Index', [
+            return Inertia::render('frontend/order/UserOrderList', [
                 'orders' => [
                     'data' => $orders // Wrap the collection in a data key
                 ],

@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import dayjs from "dayjs";
 import { ref } from "vue";
 import { EyeOutlined } from '@ant-design/icons-vue';
-import {  usePage } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 
 import type { PageProps as InertiaPageProps } from '@inertiajs/core';
 
@@ -13,10 +13,10 @@ const formatDate = (date: string) => {
 };
 const page = usePage<PageProps>();
 interface PageProps extends InertiaPageProps {
-  flash?: {
-    success?: string;
-    error?: string;
-  };
+    flash?: {
+        success?: string;
+        error?: string;
+    };
 }
 
 const columns = [
@@ -61,10 +61,8 @@ const getStatusColor = (status: string) => {
         <Head title="Order List" />
         <a-row>
             <a-col :span="24">
-                        <a-result  v-if="page.props.flash?.success"
-    status="success"
-    :title="page.props.flash.success"
-  ></a-result>
+                <a-result v-if="page.props.flash?.success" status="success"
+                    :title="page.props.flash.success"></a-result>
 
             </a-col>
 
@@ -80,7 +78,7 @@ const getStatusColor = (status: string) => {
                                 {{ index + 1 }}
                             </template>
                             <template v-else-if="column.dataIndex === 'order_id'">
-                            <a-badge :count="record.order_id" :number-style="{ backgroundColor: '#1890ff' }" />
+                                <a-badge :count="record.order_id" :number-style="{ backgroundColor: '#1890ff' }" />
                             </template>
 
                             <template v-else-if="column.dataIndex === 'status'">
@@ -118,19 +116,25 @@ const getStatusColor = (status: string) => {
                         <a-row :gutter="16">
                             <a-col :xs="24" :sm="12">
                                 <p class="mb-2"><span class="font-semibold">Name:</span> {{ selectedOrder.name }}</p>
-                                <p class="mb-2"><span class="font-semibold">Phone:</span> {{ selectedOrder.phone_number }}</p>
+                                <p class="mb-2"><span class="font-semibold">Phone:</span> {{ selectedOrder.phone_number
+                                    }}</p>
                                 <p class="mb-2"><span class="font-semibold">Email:</span> {{ selectedOrder.email }}</p>
                             </a-col>
                             <a-col :xs="24" :sm="12">
-                                <p class="mb-2"><span class="font-semibold">Address:</span> {{ selectedOrder.address }}</p>
+                                <p class="mb-2"><span class="font-semibold">Address:</span> {{ selectedOrder.address }}
+                                </p>
                                 <p class="mb-2"><span class="font-semibold">City:</span> {{ selectedOrder.city }}</p>
                                 <p class="mb-2"><span class="font-semibold">State:</span> {{ selectedOrder.state }}</p>
-                                <p class="mb-2"><span class="font-semibold">Postal Code:</span> {{ selectedOrder.postal_code }}</p>
-                                <p class="mb-2"><span class="font-semibold">Country:</span> {{ selectedOrder.country }}</p>
+                                <p class="mb-2"><span class="font-semibold">Postal Code:</span> {{
+                                    selectedOrder.postal_code }}
+                                </p>
+                                <p class="mb-2"><span class="font-semibold">Country:</span> {{ selectedOrder.country }}
+                                </p>
                             </a-col>
                         </a-row>
                         <div v-if="selectedOrder.order_notes" class="mt-2">
-                            <p class="mb-2"><span class="font-semibold">Order Notes:</span> {{ selectedOrder.order_notes }}</p>
+                            <p class="mb-2"><span class="font-semibold">Order Notes:</span> {{ selectedOrder.order_notes
+                                }}</p>
                         </div>
                     </div>
 
@@ -150,14 +154,12 @@ const getStatusColor = (status: string) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(sale, index) in selectedOrder?.sale_products" :key="sale.id" class="border-b py-3">
+                                <tr v-for="(sale, index) in selectedOrder?.sale_products" :key="sale.id"
+                                    class="border-b py-3">
                                     <td class="py-2">{{ index + 1 }}</td>
                                     <td class="py-2">
-                                        <img
-                                            :src="'/storage/' + sale.product.thumnail_img"
-                                            :alt="sale.product.name"
-                                            class="w-16 h-16 object-cover rounded"
-                                        />
+                                        <img :src="'/storage/' + sale.product.thumnail_img" :alt="sale.product.name"
+                                            class="w-16 h-16 object-cover rounded" />
                                     </td>
                                     <td class="py-2">{{ sale.product.name }}</td>
                                     <td class="py-2">{{ sale.sale_price }}</td>
@@ -171,9 +173,11 @@ const getStatusColor = (status: string) => {
                 <a-col :xs="24">
                     <div class="border-gray-500 border my-4"></div>
                     <div class="my-3">
-                        <h4 class="mb-2">Subtotal: <span class="font-bold text-primary">{{ selectedOrder?.subtotal_price }}</span></h4>
-                        <h4 class="mb-2">Shipping Charges: <span class="font-bold text-primary">Free Delivery</span></h4>
-                        <h4 class="mb-2">Total Price: <span class="font-bold text-primary">{{ selectedOrder?.total_price }}</span></h4>
+                        <h4 class="mb-2">Subtotal: <span class="font-bold text-primary">{{ selectedOrder?.subtotal_price
+                                }}</span></h4>
+                        <h4 class="mb-2">Shipping Charges: <span class="font-bold text-primary">Free Delivery</span>
+                        </h4>
+                        <h4 class="mb-2">Total Price: <span class="font-bold text-primary">{{ selectedOrder?.total_price}}</span></h4>
                     </div>
                 </a-col>
             </a-row>

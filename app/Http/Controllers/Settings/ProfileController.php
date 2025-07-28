@@ -20,12 +20,26 @@ class ProfileController extends Controller
     public function edit(Request $request): Response
     {
         $locale = session('locale', App::getLocale());
-        return Inertia::render('admin/settings/Profile', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => $request->session()->get('status'),
-            'translations' => __('messages'),
-                'locale' => $locale,
-        ]);
+        $user = Auth::user();
+        if($user->role == 'admin'){
+            return Inertia::render('admin/settings/Profile', [
+                'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+                'status' => $request->session()->get('status'),
+                'translations' => __('messages'),
+                    'locale' => $locale,
+            ]);
+
+        }
+        else{
+            return Inertia::render('frontend/settings/Profile', [
+                'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+                'status' => $request->session()->get('status'),
+                'translations' => __('messages'),
+                    'locale' => $locale,
+            ]);
+
+
+        }
     }
 
     /**

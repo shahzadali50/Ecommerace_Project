@@ -31,6 +31,7 @@ Route::get('/payment/success', [StripeController::class, 'paymentSuccess'])->nam
 Route::get('/products/search', [ProductController::class, 'productSearch'])->name('products.search');
 Route::get('/track-order', [MainController::class, 'trackOrder'])->name('track.order');
 Route::post('/track-order', [MainController::class, 'trackOrderPost'])->name('track.order.post');
+Route::get('/order-list', [MainController::class, 'orderList'])->name('order.list');
 
 Route::get('/translation-test', [TranslationTestController::class, 'index'])->name('translation.test');
 Route::post('/translate', [TranslationTestController::class, 'translate'])->name('translate');
