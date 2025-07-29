@@ -34,7 +34,8 @@ const { appContext } = getCurrentInstance()!;
 const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 const totalSales = computed(() => {
-    return props.orders.reduce((sum: number, order: Order) => sum + Number(order.total_price), 0);
+    const total = props.orders.reduce((sum: number, order: Order) => sum + Number(order.total_price), 0);
+    return Number(total.toFixed(2));
 });
 
 const totalOrders = computed(() => props.orders.length);
@@ -48,14 +49,14 @@ const totalOrders = computed(() => props.orders.length);
                 <a-col :lg="24" :md="24" :sm="24" :xs="24">
                     <h2 class="text-2xl">{{ t('Welcome to Dashboard') }}</h2>
                 </a-col>
-                <a-col :lg="6" :sm="12" :xs="24">
-                    <DashboardCard
-                        :title="t('Total Sale')"
-                        :value="totalSales"
-                        :icon="DollarCircleOutlined"
-                        bgColor="bg-yellow-800"
-                    />
-                </a-col>
+                    <a-col :lg="6" :sm="12" :xs="24">
+                        <DashboardCard
+                            :title="t('Total Sale')"
+                            :value="totalSales"
+                            :icon="DollarCircleOutlined"
+                            bgColor="bg-yellow-800"
+                        />
+                    </a-col>
                 <a-col :lg="6" :sm="12" :xs="24">
                     <DashboardCard
                         :title="t('Total Orders')"

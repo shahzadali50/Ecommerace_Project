@@ -29,40 +29,44 @@ const filters = ref({
 });
 
 // **Total Sales**
-const totalSales = computed(() =>
-    props.orders.reduce((sum, order) => sum + Number(order.total_price), 0)
-);
+const totalSales = computed(() => {
+    const total = props.orders.reduce((sum, order) => sum + Number(order.total_price), 0);
+    return Number(total.toFixed(2));
+});
 
 // **Monthly Sales**
 const monthlySales = computed(() => {
     const thisMonth = dayjs().month();
-    return props.orders.reduce((sum, order) => {
+    const total = props.orders.reduce((sum, order) => {
         const orderDate = dayjs(order.created_at);
         return orderDate.isValid() && orderDate.month() === thisMonth
             ? sum + Number(order.total_price)
             : sum;
     }, 0);
+    return Number(total.toFixed(2));
 });
 
 // **Weekly Sales**
 const weeklySales = computed(() => {
     const startOfWeek = dayjs().startOf('week');
-    return props.orders.reduce((sum, order) => {
+    const total = props.orders.reduce((sum, order) => {
         const orderDate = dayjs(order.created_at);
         return orderDate.isValid() && orderDate.isAfter(startOfWeek)
             ? sum + Number(order.total_price)
             : sum;
     }, 0);
+    return Number(total.toFixed(2));
 });
 
 // **Today's Sales**
 const todaySales = computed(() => {
     const today = dayjs().format('YYYY-MM-DD');
-    return props.orders.reduce((sum, order) => {
+    const total = props.orders.reduce((sum, order) => {
         return dayjs(order.created_at).format('YYYY-MM-DD') === today
             ? sum + Number(order.total_price)
             : sum;
     }, 0);
+    return Number(total.toFixed(2));
 });
 
 // **Filtered Revenue (Custom Date Range)**
@@ -74,12 +78,13 @@ const filteredRevenue = computed(() => {
     const start = dayjs(filters.value.start_date).startOf('day');
     const end = dayjs(filters.value.end_date).endOf('day');
 
-    return props.orders.reduce((sum, order) => {
+    const total = props.orders.reduce((sum, order) => {
         const orderDate = dayjs(order.created_at);
         return orderDate.isValid() && orderDate.isBetween(start, end, null, '[]')
             ? sum + Number(order.total_price)
             : sum;
     }, 0);
+    return Number(total.toFixed(2));
 });
 </script>
 

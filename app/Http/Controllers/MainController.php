@@ -213,6 +213,7 @@ class MainController extends Controller
 
             // Send all orders instead of filtering them
             $orders = Order::select('total_price', 'created_at')->get();
+            // dd($orders);
 
             return Inertia::render('admin/Dashboard', [
                 'brands' => $brands,
