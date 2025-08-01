@@ -24,7 +24,7 @@ const props = defineProps<{
     discount: number;
     final_price: number;
   } | null;
-  categories: { data: Array<{ id: number; name: string }> };
+  categories: { data: Array<{ id: number; name: string; children?: Array<any> }> };
   brands: { data: Array<{ id: number; name: string; category_id: number }> };
   translations: Record<string, string>;
 }>();
@@ -112,31 +112,31 @@ const handleModalVisibility = (visible: boolean) => {
 // Watch for modal visibility changes
 watch(() => props.isVisible, handleModalVisibility, { immediate: true });
 
-// Reset brand_id when category_id changes and set default brand
-watch(() => editForm.category_id, () => {
-  const availableBrands = props.brands.data.filter((brand) => brand.category_id === editForm.category_id);
-  editForm.brand_id = availableBrands.length > 0 ? availableBrands[0].id : null;
-});
+
 
 // Computed properties for select options
 const brandOptions = computed(() => {
-  return (
-    props.brands.data
-      ?.filter((brand) => brand.category_id === editForm.category_id)
-      .map((brand) => ({
-        value: brand.id,
-        label: brand.name,
-      })) || []
-  );
+  return props.brands.data?.map((brand) => ({
+    value: brand.id,
+    label: brand.name,
+  })) || [];
 });
 
-const categoryOptions = computed(() => {
-  return (
-    props.categories.data?.map((category) => ({
-      value: category.id,
+const categoryTreeData = computed(() => {
+  const transformCategory = (category: any): any => {
+    const node: any = {
       label: category.name,
-    })) || []
-  );
+      value: category.id,
+    };
+
+    if (category.children && category.children.length > 0) {
+      node.children = category.children.map(transformCategory);
+    }
+
+    return node;
+  };
+
+  return props.categories.data?.map(transformCategory) || [];
 });
 
 const filterOption = (input: string, option: any) => {
@@ -255,14 +255,17 @@ const updateProduct = () => {
         <a-col :span="12">
           <div class="mb-4">
             <label class="block">{{ translations.category || 'Category' }}</label>
-            <a-select
+            <a-tree-select
               v-model:value="editForm.category_id"
               show-search
+              style="width: 100%"
+              :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               :placeholder="translations.select_category || 'Select Category'"
-              class="mt-2 w-full"
-              :options="categoryOptions"
-              :filter-option="filterOption"
-            ></a-select>
+              allow-clear
+              tree-default-expand-all
+              :tree-data="categoryTreeData"
+              tree-node-filter-prop="label"
+            />
             <div v-if="editForm.errors.category_id" class="text-red-500">
               {{ editForm.errors.category_id }}
             </div>
@@ -278,7 +281,6 @@ const updateProduct = () => {
               class="mt-2 w-full"
               :options="brandOptions"
               :filter-option="filterOption"
-              :disabled="!editForm.category_id"
             ></a-select>
             <div v-if="editForm.errors.brand_id" class="text-red-500">
               {{ editForm.errors.brand_id }}

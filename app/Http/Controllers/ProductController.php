@@ -56,8 +56,14 @@ class ProductController extends Controller
 
             // Load brands
             $brands = Brand::select('id', 'name')->get();
-            // Load categories
-            $categories = Category::all();
+            // Load categories with hierarchical structure
+            $categories = Category::where('user_id', Auth::id())
+                ->select('id', 'name', 'parent_id')
+                ->with(['children' => function($query) {
+                    $query->select('id', 'name', 'parent_id');
+                }])
+                ->whereNull('parent_id')
+                ->get();
 
             return Inertia::render('admin/product/Index', [
                 'products' => ['data' => $products],

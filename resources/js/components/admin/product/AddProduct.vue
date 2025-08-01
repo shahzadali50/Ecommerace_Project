@@ -5,10 +5,9 @@ import { LoaderCircle } from "lucide-vue-next";
 
 const props = defineProps<{
     isVisible: boolean;
-    categories: Array<{ id: number; name: string }>;
+    categories: Array<{ id: number; name: string; children?: Array<any> }>;
     brands: Array<{ id: number; name: string; category_id: number }>;
     translations: Record<string, string>;
-    allCategories: Array<{id: number, name: string}>;
 }>();
 
 const emit = defineEmits(['update:isVisible', 'success']);
@@ -34,25 +33,30 @@ const addProductForm = useForm({
     final_price: 0,
 });
 
-// Reset brand_id when category_id changes
-watch(() => addProductForm.category_id, () => {
-    addProductForm.brand_id = null;
-});
+
 
 const brandOptions = computed(() => {
-    return props.brands
-        ?.filter((brand) => brand.category_id === addProductForm.category_id)
-        .map((brand) => ({
-            value: brand.id,
-            label: brand.name,
-        })) || [];
+    return props.brands?.map((brand) => ({
+        value: brand.id,
+        label: brand.name,
+    })) || [];
 });
 
-const categoryOptions = computed(() => {
-    return props.categories?.map((category) => ({
-        value: category.id,
-        label: category.name,
-    })) || [];
+const categoryTreeData = computed(() => {
+    const transformCategory = (category: any): any => {
+        const node: any = {
+            label: category.name,
+            value: category.id,
+        };
+
+        if (category.children && category.children.length > 0) {
+            node.children = category.children.map(transformCategory);
+        }
+
+        return node;
+    };
+
+    return props.categories?.map(transformCategory) || [];
 });
 
 const filterOption = (input: string, option: any) => {
@@ -136,21 +140,17 @@ const saveProduct = () => {
                 <a-col :span="12">
                     <div class="mb-4">
                         <label class="block">{{ translations.select_category || 'Select Category' }}</label>
-                        <a-select
+                        <a-tree-select
                             v-model:value="addProductForm.category_id"
                             show-search
+                            style="width: 100%"
+                            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                             :placeholder="translations.select_category || 'Select Category'"
-                            class="mt-2 w-full"
-                            allowClear
-                        >
-                            <a-select-option
-                                v-for="category in props.categories"
-                                :key="category.id"
-                                :value="category.id"
-                            >
-                                {{ category.name }}
-                            </a-select-option>
-                        </a-select>
+                            allow-clear
+                            tree-default-expand-all
+                            :tree-data="categoryTreeData"
+                            tree-node-filter-prop="label"
+                        />
                         <div v-if="addProductForm.errors.category_id" class="text-red-500">
                             {{ addProductForm.errors.category_id }}
                         </div>
@@ -166,7 +166,6 @@ const saveProduct = () => {
                             class="mt-2 w-full"
                             :options="brandOptions"
                             :filter-option="filterOption"
-                            :disabled="!addProductForm.category_id"
                         ></a-select>
                         <div v-if="addProductForm.errors.brand_id" class="text-red-500">
                             {{ addProductForm.errors.brand_id }}
