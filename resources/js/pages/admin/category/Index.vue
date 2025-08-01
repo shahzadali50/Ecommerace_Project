@@ -10,6 +10,8 @@ import DataTablesCore from 'datatables.net-dt';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import { router } from '@inertiajs/vue3';
 import { getCurrentInstance } from 'vue';
+import { computed } from 'vue';
+
 
 DataTable.use(DataTablesCore);
 
@@ -21,12 +23,23 @@ const formatDate = (date: string) => {
 const { appContext } = getCurrentInstance()!;
 const t = appContext.config.globalProperties.$t as (key: string) => string;
 
-defineProps<{
+const props =defineProps<{
     categories: {
         data: Array<any>;
     };
-    allCategories: Array<{id: number, name: string}>;
 }>();
+
+// Transform categories into Ant Design's options format
+const categoryOptions = computed(() => {
+  return props.categories?.data?.map((category: any) => ({
+    value: category.id,
+    label: category.name,
+  })) || [];
+});
+
+const filterOption = (input: string, option: any) => {
+  return option.label.toLowerCase().includes(input.toLowerCase());
+};
 
 const form = useForm({
     name: '',
@@ -43,14 +56,6 @@ const editForm = useForm({
     image: null as File | null,
     _method: 'PUT'
 });
-const brandForm = useForm({
-    id: null,
-    name: '',
-    description: '',
-    category_id: null,
-    image: null as File | null,
-});
-
 const isAddCategoryModalVisible = ref(false);
 const selectedCategoryName = ref('');
 const currentImage = ref('');
@@ -101,14 +106,7 @@ const dataTableColumns = [
         </button>
         <button class="delete-btn p-2" data-id="${row.id}" title="${t('Delete')}">
             <i class="fa fa-trash text-red-500"></i>
-        </button>
-        <button class="brand-btn p-2" data-id="${row.id}" title="${t('Add Brand')}">
-            <i class="fa fa-creative-commons"></i>
-        </button>
-        <button class="related-brand-btn p-2" data-id="${row.slug}" title="${t('Brand List')}">
-            <i class="fa fa-list text-slate-800"></i>
-        </button>
-    `
+        </button>`
     }
 ];
 
@@ -142,14 +140,6 @@ const handleImageChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     if (target.files && target.files[0]) {
         form.image = target.files[0];
-        imagePreview.value = URL.createObjectURL(target.files[0]);
-    }
-};
-
-const handleBrandImageChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    if (target.files && target.files[0]) {
-        brandForm.image = target.files[0];
         imagePreview.value = URL.createObjectURL(target.files[0]);
     }
 };
@@ -206,31 +196,7 @@ const openEditModal = (category: any) => {
     editImagePreview.value = '';
     isEditModalVisible.value = true;
 };
-const openBrandModal = (record: any) => {
-    selectedCategoryName.value = record.name;
-    brandForm.category_id = record.id;
-    isbrandModalVisible.value = true;
-};
-const moveRelatedBrand = (record: any) => {
-    router.get(route('admin.related-brand-list', record.slug))
 
-};
-const saveBrand = () => {
-    isLoading.value = true;
-    brandForm.post(route('admin.brand.store'), {
-        onSuccess: () => {
-            brandForm.reset();
-            isbrandModalVisible.value = false;
-            if (imagePreview.value) {
-                URL.revokeObjectURL(imagePreview.value);
-                imagePreview.value = '';
-            }
-        },
-        onFinish: () => {
-            isLoading.value = false;
-        }
-    })
-}
 
 const updateCategory = () => {
     isLoading.value = true;
@@ -307,11 +273,6 @@ const handleExcelFileChange = (e: Event) => {
                             <a-button @click="importCategory()" type="default">
                                 Import Category
                             </a-button>
-                            <Link :href="route('admin.category.log')">
-                            <a-button type="default">
-                                {{ t('Category Logs') }}
-                            </a-button>
-                            </Link>
                         </div>
                     </div>
                     <DataTable v-if="categories?.data" :data="categories.data" :columns="dataTableColumns"
@@ -347,6 +308,7 @@ const handleExcelFileChange = (e: Event) => {
                         :placeholder="t('Enter Name')" />
                     <div v-if="form.errors.name" class="text-red-500">{{ form.errors.name }}</div>
                 </div>
+
                 <div class="mb-4">
                     <label class="block">{{ t('Parent Category') }}</label>
                     <a-select
@@ -355,14 +317,10 @@ const handleExcelFileChange = (e: Event) => {
                         class="mt-2 w-full"
                         :placeholder="t('Select Parent Category (Optional)')"
                         allowClear
+                        :options="categoryOptions"
+                        :filter-option="filterOption"
                     >
-                        <a-select-option
-                            v-for="category in allCategories"
-                            :key="category.id"
-                            :value="category.id"
-                        >
-                            {{ category.name }}
-                        </a-select-option>
+
                     </a-select>
                     <div v-if="form.errors.parent_id" class="text-red-500">{{ form.errors.parent_id }}</div>
                 </div>
@@ -407,14 +365,10 @@ const handleExcelFileChange = (e: Event) => {
                         class="mt-2 w-full"
                         :placeholder="t('Select Parent Category (Optional)')"
                         allowClear
+                         :options="categoryOptions"
+                        :filter-option="filterOption"
                     >
-                        <a-select-option
-                            v-for="category in allCategories"
-                            :key="category.id"
-                            :value="category.id"
-                        >
-                            {{ category.name }}
-                        </a-select-option>
+
                     </a-select>
                     <div v-if="editForm.errors.parent_id" class="text-red-500">{{ editForm.errors.parent_id }}</div>
                 </div>
@@ -448,44 +402,6 @@ const handleExcelFileChange = (e: Event) => {
                 <div class="text-right">
                     <a-button type="default" @click="isEditModalVisible = false">{{ t('Cancel') }}</a-button>
                     <a-button type="primary" html-type="submit" class="ml-2">{{ t('Update') }}</a-button>
-                </div>
-            </form>
-        </a-modal>
-
-        <!-- Brand Modal -->
-        <a-modal v-model:open="isbrandModalVisible" :title="t('Add Brand')"
-            @cancel="isbrandModalVisible = false" :footer="null">
-            <h4 class="text-md">{{ t('Category') }} ({{ selectedCategoryName }})</h4>
-            <form @submit.prevent="saveBrand()" enctype="multipart/form-data">
-                <a-input hidden v-model:value="brandForm.category_id" class="mt-2 w-full"
-                    :placeholder="t('Enter Name')" />
-                <div class="mb-4">
-                    <label class="block">{{ t('Name') }}</label>
-                    <a-input v-model:value="brandForm.name" class="mt-2 w-full"
-                        :placeholder="t('Enter Name')" />
-                    <div v-if="brandForm.errors.name" class="text-red-500">{{ brandForm.errors.name }}</div>
-                </div>
-                <div class="mb-4">
-                    <label class="block">{{ t('Description') }}</label>
-                    <a-textarea v-model:value="brandForm.description" class="mt-2 w-full"
-                        :placeholder="t('Enter Description')"
-                        :auto-size="{ minRows: 2, maxRows: 5 }" />
-                    <div v-if="brandForm.errors.description" class="text-red-500">{{ brandForm.errors.description }}
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block">{{ t('Image') }}</label>
-                    <input type="file" @change="handleBrandImageChange" accept="image/*"
-                        class="mt-2 w-full p-2 border rounded" />
-                    <div v-if="brandForm.errors.image" class="text-red-500">{{ brandForm.errors.image }}</div>
-                    <div v-if="imagePreview" class="mt-2">
-                        <p class="text-sm text-gray-600 mb-1">{{ t('Preview') }}:</p>
-                        <img :src="imagePreview" alt="Image Preview" class="w-24 h-24 object-cover rounded border" />
-                    </div>
-                </div>
-                <div class="text-right">
-                    <a-button type="default" @click="isbrandModalVisible = false">{{ t('Cancel') }}</a-button>
-                    <a-button type="primary" html-type="submit" class="ml-2">{{ t('Save') }}</a-button>
                 </div>
             </form>
         </a-modal>

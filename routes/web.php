@@ -43,7 +43,6 @@ Route::middleware(['auth', 'admin', 'verified'])->name('admin.')->group(function
     Route::post('import/data', [CategoryController::class, 'import'])->name('import.data');
     Route::put('category/update/{id}', [CategoryController::class, 'update'])->name('category.update');
     Route::delete('category/delete/{id}', [CategoryController::class, 'destroy'])->name('category.delete');
-    Route::get('category/log', [CategoryController::class, 'category_log'])->name('category.log');
     Route::get('brands', [BrandController::class, 'index'])->name('brands');
     Route::post('brand/store', action: [BrandController::class, 'store'])->name('brand.store');
     Route::get('brand/list/{slug}', action: [BrandController::class, 'related_brand_list'])->name('related-brand-list');

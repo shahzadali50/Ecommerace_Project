@@ -7,14 +7,11 @@ use Exception;
 use Inertia\Inertia;
 use App\Models\Category;
 use App\Imports\DataImport;
-use App\Models\CategoryLog;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Imports\CategoryImport;
-use App\Jobs\TranslateCategory;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use App\Models\CategoryTranslation;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -50,9 +47,6 @@ class CategoryController extends Controller
                 'categories' => [
                     'data' => $categories // Wrap the collection in a data key
                 ],
-                'allCategories' => Category::where('user_id', Auth::id())
-                    ->select('id', 'name')
-                    ->get(),
                 'locale' => App::getLocale(),
             ]);
         } catch (\Throwable $e) {
@@ -96,20 +90,6 @@ class CategoryController extends Controller
                 'parent_id' => $request->parent_id,
                 'image' => $imagePath,
             ]);
-
-            // Log category
-            $user = Auth::user();
-            CategoryLog::create([
-                'note' => 'Category "' . $category->name . '" created by ' . ($user->name ?? 'Unknown'),
-                'category_id' => $category->id,
-                'category_name' => $category->name,
-                'user_id' => $user->id,
-            ]);
-
-
-            // Category created successfully
-
-
             DB::commit();
             return redirect()->back()->with('success', 'Category created successfully.');
         } catch (\Exception $e) {
@@ -118,10 +98,6 @@ class CategoryController extends Controller
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
-
-
-
-
     public function destroy($id)
     {
         DB::beginTransaction();
@@ -138,15 +114,6 @@ class CategoryController extends Controller
             }
 
             $user = Auth::user();
-
-            // 🧼 Log deletion
-            $note = 'Category "' . $category->name . '" Deleted by ' . ($user->name ?? 'Unknown User');
-            CategoryLog::create([
-                'note' => $note,
-                'category_name' => $category->name,
-                'category_id' => $category->id,
-                'user_id' => $user->id,
-            ]);
 
             // 🗑️ Delete category image
             if ($category->image && Storage::disk('public')->exists($category->image)) {
@@ -172,20 +139,12 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $locale = session('locale', App::getLocale());
-
         // 🔍 Find category
         $category = Category::find($id);
 
         if (!$category) {
             return redirect()->back()->with('error', 'Category not found.');
         }
-
-        // 🔍 Get the current translation row (needed for unique ignore)
-        $currentTranslation = CategoryTranslation::where('category_id', $id)
-            ->where('lang', $locale)
-            ->where('user_id', Auth::id())
-            ->first();
 
         // ✅ Validate input
         $request->validate([
@@ -228,16 +187,6 @@ class CategoryController extends Controller
 
             $category->update($updateData);
 
-            // ✅ Log the update
-            $user = Auth::user();
-            $note = 'Category "' . $oldName . '" updated to "' . $category->name . '" by ' . ($user->name ?? 'Unknown User');
-            CategoryLog::create([
-                'note' => $note,
-                'category_id' => $category->id,
-                'category_name' => $category->name,
-                'user_id' => Auth::id(),
-            ]);
-
             // Category updated successfully
 
             DB::commit();
@@ -249,20 +198,7 @@ class CategoryController extends Controller
         }
     }
 
-    public function category_log()
-    {
 
-        $CategoryLog = CategoryLog::with('user')
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->get();
-
-        return Inertia::render('admin/category/CategoryLog', [
-            'CategoryLog' => [
-                'data' => $CategoryLog
-            ],
-        ]);
-    }
     public function import(Request $request)
     {
         // dd($request->all());
