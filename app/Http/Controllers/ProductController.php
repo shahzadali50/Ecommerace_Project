@@ -320,7 +320,6 @@ class ProductController extends Controller
     }
 
 
-
     public function product_log()
     {
         $locale = session('locale', App::getLocale());
