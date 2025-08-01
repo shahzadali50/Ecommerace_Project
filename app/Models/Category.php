@@ -20,7 +20,19 @@ class Category extends Model
         'image',
         'description',
         'user_id',
+        'parent_id',
     ];
+     // Parent category
+     public function parent()
+     {
+         return $this->belongsTo(Category::class, 'parent_id');
+     }
+
+     // Child categories
+     public function children()
+     {
+         return $this->hasMany(Category::class, 'parent_id')->with('children');
+     }
 
     public function brands(): HasMany
     {

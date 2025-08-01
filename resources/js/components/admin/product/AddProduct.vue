@@ -8,6 +8,7 @@ const props = defineProps<{
     categories: Array<{ id: number; name: string }>;
     brands: Array<{ id: number; name: string; category_id: number }>;
     translations: Record<string, string>;
+    allCategories: Array<{id: number, name: string}>;
 }>();
 
 const emit = defineEmits(['update:isVisible', 'success']);
@@ -140,9 +141,16 @@ const saveProduct = () => {
                             show-search
                             :placeholder="translations.select_category || 'Select Category'"
                             class="mt-2 w-full"
-                            :options="categoryOptions"
-                            :filter-option="filterOption"
-                        ></a-select>
+                            allowClear
+                        >
+                            <a-select-option
+                                v-for="category in props.categories"
+                                :key="category.id"
+                                :value="category.id"
+                            >
+                                {{ category.name }}
+                            </a-select-option>
+                        </a-select>
                         <div v-if="addProductForm.errors.category_id" class="text-red-500">
                             {{ addProductForm.errors.category_id }}
                         </div>

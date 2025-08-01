@@ -27,31 +27,32 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            $locale = session('locale', App::getLocale());
-
-            // Eager load translations for the current session language
-            $categories = Category::with([
-                'category_translations' => fn($q) => $q->where('lang', $locale)
-            ])
+            // Eager load parent relationship
+            $categories = Category::with(['parent'])
                 ->where('user_id', Auth::id())
                 ->latest()
                 ->get();
 
-            // Transform each category with translation fallback
+            // Transform each category with basic data
             $categories = $categories->map(fn($category) => [
                 'id' => $category->id,
-                'slug' => $category->slug,
                 'image' => $category->image,
                 'created_at' => $category->created_at->format('Y-m-d H:i'),
-                'name' => $category->category_translations->first()?->name ?? $category->name,
-                'description' => $category->category_translations->first()?->description ?? $category->description,
+                'name' => $category->name,
+                'description' => $category->description,
+                'parent' => $category->parent ? [
+                    'id' => $category->parent->id,
+                    'name' => $category->parent->name,
+                ] : null,
             ]);
 
             return Inertia::render('admin/category/Index', [
                 'categories' => [
                     'data' => $categories // Wrap the collection in a data key
                 ],
-                'translations' => __('messages'),
+                'allCategories' => Category::where('user_id', Auth::id())
+                    ->select('id', 'name')
+                    ->get(),
                 'locale' => App::getLocale(),
             ]);
         } catch (\Throwable $e) {
@@ -67,9 +68,10 @@ class CategoryController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('category_translations', 'name')->where('user_id', Auth::id())->whereNull('deleted_at'),
+                Rule::unique('categories', 'name')->where('user_id', Auth::id())->whereNull('deleted_at'),
             ],
             'description' => 'required|string',
+            'parent_id' => 'nullable|exists:categories,id',
             'image' => [
                 'required',
                 'image',
@@ -91,6 +93,7 @@ class CategoryController extends Controller
                 'name' => $request->name,
                 'slug' => Str::slug($request->name),
                 'description' => $request->description,
+                'parent_id' => $request->parent_id,
                 'image' => $imagePath,
             ]);
 
@@ -104,8 +107,7 @@ class CategoryController extends Controller
             ]);
 
 
-            // ✅ Dispatch translation job
-            TranslateCategory::dispatch($category);
+            // Category created successfully
 
 
             DB::commit();
@@ -191,15 +193,13 @@ class CategoryController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('category_translations', 'name')
-                    ->ignore($currentTranslation?->id) // ✅ this must be a translation ID
-                    ->where(function ($query) use ($locale) {
-                        $query->where('lang', $locale)
-                            ->where('user_id', Auth::id())
-                            ->whereNull('deleted_at');
-                    }),
+                Rule::unique('categories', 'name')
+                    ->ignore($id)
+                    ->where('user_id', Auth::id())
+                    ->whereNull('deleted_at'),
             ],
             'description' => 'required|string',
+            'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -210,6 +210,7 @@ class CategoryController extends Controller
             $updateData = [
                 'name' => $request->name,
                 'description' => $request->description,
+                'parent_id' => $request->parent_id,
                 'slug' => Str::slug($request->name),
             ];
 
@@ -237,8 +238,7 @@ class CategoryController extends Controller
                 'user_id' => Auth::id(),
             ]);
 
-            // ✅ Dispatch translation job (for updated content)
-            TranslateCategory::dispatch($category);
+            // Category updated successfully
 
             DB::commit();
             return redirect()->back()->with('success', 'Category updated successfully.');

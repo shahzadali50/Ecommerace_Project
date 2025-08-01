@@ -25,11 +25,13 @@ defineProps<{
     categories: {
         data: Array<any>;
     };
+    allCategories: Array<{id: number, name: string}>;
 }>();
 
 const form = useForm({
     name: '',
     description: '',
+    parent_id: null as number | null,
     id: null,
     image: null as File | null
 })
@@ -37,6 +39,7 @@ const editForm = useForm({
     id: null,
     name: '',
     description: '',
+    parent_id: null as number | null,
     image: null as File | null,
     _method: 'PUT'
 });
@@ -79,6 +82,13 @@ const dataTableColumns = [
                 : '<span class="text-gray-400 mb-1">No Image</span>'
     },
     { title: t('Name'), data: 'name' },
+    {
+        title: t('Parent'),
+        data: 'parent.name',
+        render: (data: string, type: string, row: any) => {
+            return row.parent && row.parent.name ? row.parent.name : 'N/A';
+        }
+    },
     { title: t('Description'), data: 'description', render: (data: string) => data ?? 'N/A' },
     { title: t('Created At'), data: 'created_at', render: (data: string) => formatDate(data) },
     {
@@ -190,6 +200,7 @@ const openEditModal = (category: any) => {
     editForm.id = category.id;
     editForm.name = category.name;
     editForm.description = category.description;
+    editForm.parent_id = category.parent?.id || null;
     editForm.image = null;
     currentImage.value = category.image;
     editImagePreview.value = '';
@@ -310,6 +321,7 @@ const handleExcelFileChange = (e: Event) => {
                                 <th>{{ t('Sr.') }}</th>
                                 <th>{{ t('Image') }}</th>
                                 <th>{{ t('Name') }}</th>
+                                <th>{{ t('Parent') }}</th>
                                 <th>{{ t('Description') }}</th>
                                 <th>{{ t('Created At') }}</th>
                                 <th>{{ t('Action') }}</th>
@@ -334,6 +346,25 @@ const handleExcelFileChange = (e: Event) => {
                     <a-input v-model:value="form.name" class="mt-2 w-full"
                         :placeholder="t('Enter Name')" />
                     <div v-if="form.errors.name" class="text-red-500">{{ form.errors.name }}</div>
+                </div>
+                <div class="mb-4">
+                    <label class="block">{{ t('Parent Category') }}</label>
+                    <a-select
+                    show-search
+                        v-model:value="form.parent_id"
+                        class="mt-2 w-full"
+                        :placeholder="t('Select Parent Category (Optional)')"
+                        allowClear
+                    >
+                        <a-select-option
+                            v-for="category in allCategories"
+                            :key="category.id"
+                            :value="category.id"
+                        >
+                            {{ category.name }}
+                        </a-select-option>
+                    </a-select>
+                    <div v-if="form.errors.parent_id" class="text-red-500">{{ form.errors.parent_id }}</div>
                 </div>
                 <div class="mb-4">
                     <label class="block">{{ t('Description') }}</label>
@@ -368,6 +399,24 @@ const handleExcelFileChange = (e: Event) => {
                     <a-input v-model:value="editForm.name" class="mt-2 w-full"
                         :placeholder="t('Enter Name')" />
                     <div v-if="editForm.errors.name" class="text-red-500">{{ editForm.errors.name }}</div>
+                </div>
+                <div class="mb-4">
+                    <label class="block">{{ t('Parent Category') }}</label>
+                    <a-select
+                        v-model:value="editForm.parent_id"
+                        class="mt-2 w-full"
+                        :placeholder="t('Select Parent Category (Optional)')"
+                        allowClear
+                    >
+                        <a-select-option
+                            v-for="category in allCategories"
+                            :key="category.id"
+                            :value="category.id"
+                        >
+                            {{ category.name }}
+                        </a-select-option>
+                    </a-select>
+                    <div v-if="editForm.errors.parent_id" class="text-red-500">{{ editForm.errors.parent_id }}</div>
                 </div>
                 <div class="mb-4">
                     <label class="block">{{ t('Description') }}</label>
