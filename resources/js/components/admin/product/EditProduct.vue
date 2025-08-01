@@ -321,39 +321,7 @@ const updateProduct = () => {
           </div>
         </a-col>
       </a-row>
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <div class="mb-4">
-            <label class="block">{{ translations.discount || 'Discount (%)' }}</label>
-            <a-input-number
-              v-model:value="editForm.discount"
-              class="mt-2 w-full"
-              :min="0"
-              :max="100"
-              :step="1"
-              :placeholder="translations.enter_discount || 'Enter Discount'"
-            />
-            <div v-if="editForm.errors.discount" class="text-red-500">
-              {{ editForm.errors.discount }}
-            </div>
-          </div>
-        </a-col>
-        <a-col :span="12">
-          <div class="mb-4">
-            <label class="block">{{ translations.final_price || 'Final Price' }}</label>
-            <a-input-number
-              v-model:value="editForm.final_price"
-              class="mt-2 w-full"
-              :min="0"
-              :step="0.01"
-              disabled
-            />
-            <div v-if="editForm.errors.final_price" class="text-red-500">
-              {{ editForm.errors.final_price }}
-            </div>
-          </div>
-        </a-col>
-      </a-row>
+
       <a-row :gutter="16">
         <a-col :span="12">
           <div class="mb-4">
@@ -482,8 +450,8 @@ const updateProduct = () => {
             </div>
           </div>
         </a-col>
-      </a-row>
-      <div class="mb-4">
+        <a-col :span="12">
+            <div class="mb-4">
         <label class="flex items-center">
           <a-checkbox v-model:checked="editForm.feature">
             {{ translations.featured || 'Featured' }}
@@ -493,11 +461,45 @@ const updateProduct = () => {
           {{ editForm.errors.feature }}
         </div>
       </div>
+
+        </a-col>
+      </a-row>
+
+      <a-row :gutter="16">
+        <a-col :span="12">
+          <div class="mb-4">
+            <label class="block">{{ translations.discount || 'Discount (%)' }}</label>
+            <a-input-number
+              v-model:value="editForm.discount"
+              class="mt-2 w-full"
+              :min="0"
+              :max="100"
+              :step="1"
+              :placeholder="translations.enter_discount || 'Enter Discount %'"
+            />
+            <div v-if="editForm.errors.discount" class="text-red-500">
+              {{ editForm.errors.discount }}
+            </div>
+          </div>
+        </a-col>
+        <a-col :span="12">
+          <div class="mb-4">
+            <label class="block font-bold ">{{ translations.final_price || 'Final Price' }}</label>
+            <a-input-number
+              v-model:value="editForm.final_price"
+              class="mt-2 w-full text-2xl font-bold p-2 text-red-600"
+              :min="0"
+              :step="0.01"
+              disabled
+            />
+            <div v-if="editForm.errors.final_price" class="text-red-500">
+              {{ editForm.errors.final_price }}
+            </div>
+          </div>
+        </a-col>
+      </a-row>
       <div class="text-right">
-        <a-button type="default" @click="$emit('update:isVisible', false)">
-          {{ translations.cancel || 'Cancel' }}
-        </a-button>
-        <Button type="submit" class="btn-primary ml-2" :disabled="editForm.processing">
+        <Button type="submit" class="btn  btn-primary ml-2 w-full h-16 flex items-center justify-center text-lg" :disabled="editForm.processing">
                     <LoaderCircle v-if="editForm.processing" class="h-4 w-4 animate-spin" />
                     {{ translations.update || 'Update' }}
                 </Button>
