@@ -310,7 +310,6 @@ class ProductController extends Controller
                 'feature' => $request->feature ?? false,
                 'barcode' => $request->barcode,
             ]);
-git
             return redirect()->back()->with('success', 'Product updated successfully.');
 
         } catch (\Exception $e) {
