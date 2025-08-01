@@ -23,27 +23,21 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $locale = session('locale', App::getLocale());
-
-            // Load products with brand, category, and their translations for current locale
+            // Load products with brand and category relationships
             $products = Product::where('user_id', Auth::id())
-                ->with([
-                    'brand' => fn($q) => $q->with(['brand_translations' => fn($q) => $q->where('lang', $locale)]),
-                    'category' => fn($q) => $q->with(['category_translations' => fn($q) => $q->where('lang', $locale)]),
-                    'product_translations' => fn($q) => $q->where('lang', $locale),
-                ])
+                ->with(['brand', 'category'])
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            // Transform the collection to include translated fields
-            $products = $products->map(function ($product) use ($locale) {
+            // Transform the collection with basic data
+            $products = $products->map(function ($product) {
                 return [
                     'id' => $product->id,
                     'slug' => $product->slug,
-                    'name' => $product->product_translations->first()?->name ?? $product->name,
+                    'name' => $product->name,
                     'thumnail_img' => $product->thumnail_img,
                     'gallary_img' => $product->gallary_img,
-                    'description' => $product->product_translations->first()?->description ?? $product->description,
+                    'description' => $product->description,
                     'stock' => $product->stock,
                     'purchase_price' => $product->purchase_price,
                     'sale_price' => $product->sale_price,
@@ -55,38 +49,21 @@ class ProductController extends Controller
                     'status' => $product->status,
                     'category_id' => $product->category_id,
                     'created_at' => $product->created_at->format('Y-m-d H:i'),
-                    'brand_name' => $product->brand?->brand_translations->first()?->name ?? $product->brand?->name ?? 'N/A',
-                    'category_name' => $product->category?->category_translations->first()?->name ?? $product->category?->name ?? 'N/A',
+                    'brand_name' => $product->brand?->name ?? 'N/A',
+                    'category_name' => $product->category?->name ?? 'N/A',
                 ];
             });
 
-            // Load brands with translations
-            $brands = Brand::with(['brand_translations' => fn($q) => $q->where('lang', $locale)])
-                ->get()
-                ->map(function ($brand) use ($locale) {
-                    return [
-                        'id' => $brand->id,
-                        'category_id' => $brand->category_id,
-                        'name' => $brand->brand_translations->first()?->name ?? $brand->name,
-                    ];
-                });
-
-            // Load categories with translations
-            $categories = Category::with(['category_translations' => fn($q) => $q->where('lang', $locale)])
-                ->get()
-                ->map(function ($category) use ($locale) {
-                    return [
-                        'id' => $category->id,
-                        'name' => $category->category_translations->first()?->name ?? $category->name,
-                    ];
-                });
+            // Load brands
+            $brands = Brand::select('id', 'name')->get();
+            // Load categories
+            $categories = Category::all();
 
             return Inertia::render('admin/product/Index', [
-                'products' => ['data' => $products], // Wrap in data key
-                'brands' => ['data' => $brands], // Wrap in data key
-                'categories' => ['data' => $categories], // Wrap in data key
-                'translations' => __('messages'),
-                'locale' => $locale,
+                'products' => ['data' => $products],
+                'brands' => ['data' => $brands],
+                'categories' => ['data' => $categories],
+                'locale' => App::getLocale(),
             ]);
 
         } catch (\Throwable $e) {
