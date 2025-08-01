@@ -19,21 +19,8 @@ const translations = computed(() => {
 });
 
 const props = defineProps<{
-  categories: { data: Array<any> };
   brands: { data: Array<any> };
 }>();
-
-// Transform categories into Ant Design's options format
-const categoryOptions = computed(() => {
-  return props.categories?.data?.map((category: any) => ({
-    value: category.id,
-    label: category.name,
-  })) || [];
-});
-
-const filterOption = (input: string, option: any) => {
-  return option.label.toLowerCase().includes(input.toLowerCase());
-};
 
 // Format date
 const formatDate = (date: string) => {
@@ -60,11 +47,6 @@ const dataTableColumns = [
   {
     title: translations.value.description || 'Description',
     data: 'description',
-    render: (data: string) => data ?? 'N/A',
-  },
-  {
-    title: translations.value.category || 'Category',
-    data: 'category_name',
     render: (data: string) => data ?? 'N/A',
   },
   {
@@ -109,7 +91,6 @@ const options = {
 const form = useForm({
   name: '',
   description: '',
-  category_id: null,
   image: null as File | null,
 });
 
@@ -117,7 +98,6 @@ const editForm = useForm({
   id: null,
   name: '',
   description: '',
-  category_id: null, // Added for category dropdown
   image: null as File | null,
   _method: 'PUT',
 });
@@ -143,7 +123,6 @@ const openEditModal = (brand: any) => {
   editForm.id = brand.id;
   editForm.name = brand.name;
   editForm.description = brand.description;
-  editForm.category_id = brand.category_id; // Set category_id
   editForm.image = null;
   currentImage.value = brand.image;
   editImagePreview.value = '';
@@ -271,7 +250,6 @@ const getOriginalFilename = (path: string) => {
                 <th>{{ translations.image || 'Image' }}</th>
                 <th>{{ translations.name || 'Name' }}</th>
                 <th>{{ translations.description || 'Description' }}</th>
-                <th>{{ translations.category || 'Category' }}</th>
                 <th>{{ translations.created_at || 'Created At' }}</th>
                 <th>{{ translations.action || 'Action' }}</th>
               </tr>
@@ -292,20 +270,6 @@ const getOriginalFilename = (path: string) => {
       :footer="null"
     >
       <form @submit.prevent="saveBrand()" enctype="multipart/form-data">
-        <div class="mb-4">
-          <label class="block">{{ translations.category || 'Category' }}</label>
-          <a-select
-            v-model:value="form.category_id"
-            show-search
-            :placeholder="translations.select_category || 'Select a Category'"
-            class="mt-2 w-full"
-            :options="categoryOptions"
-            :filter-option="filterOption"
-          ></a-select>
-          <div v-if="form.errors.category_id" class="text-red-500">
-            {{ form.errors.category_id }}
-          </div>
-        </div>
         <div class="mb-4">
           <label class="block">{{ translations.name || 'Name' }}</label>
           <a-input
@@ -362,20 +326,6 @@ const getOriginalFilename = (path: string) => {
       :footer="null"
     >
       <form @submit.prevent="updateBrand()" enctype="multipart/form-data">
-        <div class="mb-4">
-          <label class="block">{{ translations.category || 'Category' }}</label>
-          <a-select
-            v-model:value="editForm.category_id"
-            show-search
-            :placeholder="translations.select_category || 'Select a Category'"
-            class="mt-2 w-full"
-            :options="categoryOptions"
-            :filter-option="filterOption"
-          ></a-select>
-          <div v-if="editForm.errors.category_id" class="text-red-500">
-            {{ editForm.errors.category_id }}
-          </div>
-        </div>
         <div class="mb-4">
           <label class="block">{{ translations.name || 'Name' }}</label>
           <a-input
