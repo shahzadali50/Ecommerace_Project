@@ -103,17 +103,11 @@ class CategoryController extends Controller
         DB::beginTransaction();
 
         try {
-            $category = Category::with([
-                'brands.products.purchaseProducts',
-                'brands.brand_translations',
-                'category_translations'
-            ])->find($id);
+            $category = Category::with(['products'])->find($id);
 
             if (!$category) {
                 return redirect()->back()->with('error', 'Category not found.');
             }
-
-            $user = Auth::user();
 
             // 🗑️ Delete category image
             if ($category->image && Storage::disk('public')->exists($category->image)) {

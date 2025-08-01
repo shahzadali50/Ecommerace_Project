@@ -33,11 +33,6 @@ class Category extends Model
      {
          return $this->hasMany(Category::class, 'parent_id')->with('children');
      }
-
-    public function brands(): HasMany
-    {
-        return $this->hasMany(Brand::class);
-    }
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
@@ -51,25 +46,9 @@ class Category extends Model
 
         static::deleting(function ($category) {
             try {
-                foreach ($category->brands as $brand) {
-                    foreach ($brand->brand_translations as $translation) {
-                        $translation->delete();
-                    }
-
-                    foreach ($brand->products as $product) {
-                        $product->purchaseProducts()->delete();
-                        $product->delete();
-                    }
-
-                    if ($brand->image && Storage::disk('public')->exists($brand->image)) {
-                        Storage::disk('public')->delete($brand->image);
-                    }
-
-                    $brand->delete();
-                }
-
-                foreach ($category->category_translations as $translation) {
-                    $translation->delete();
+                foreach ($category->products as $product) {
+                    // $product->purchaseProducts()->delete();
+                    $product->delete();
                 }
 
             } catch (\Throwable $e) {
