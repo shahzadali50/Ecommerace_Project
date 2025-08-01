@@ -148,7 +148,6 @@ class ProductController extends Controller
                 'product_name' => $product->name,
                 'user_id' => Auth::id(),
             ]);
-            TranslateProduct::dispatch($product);
             DB::commit();
             return redirect()->back()->with('success', 'Product created successfully.');
 
@@ -257,6 +256,12 @@ class ProductController extends Controller
         try {
             $oldName = $product->name;
 
+            // Store original values for logging
+            $oldPurchasePrice = $product->purchase_price;
+            $oldSalePrice = $product->sale_price;
+            $oldDiscount = $product->discount;
+            $oldFinalPrice = $product->final_price;
+
             // Handle thumbnail image
             $thumbnailPath = $product->thumnail_img;
             if ($request->hasFile('thumnail_img')) {
@@ -305,25 +310,7 @@ class ProductController extends Controller
                 'feature' => $request->feature ?? false,
                 'barcode' => $request->barcode,
             ]);
-
-            // Product log
-            $user = Auth::user();
-            $note = 'Product "' . $oldName . '" updated to "' . $product->name . '" by ' . ($user->name ?? 'Unknown User') .
-                ' with previous purchase price: ' . $product->getOriginal('purchase_price') . ' -> new: ' . $product->purchase_price .
-                ', previous sale price: ' . $product->getOriginal('sale_price') . ' -> new: ' . $product->sale_price .
-                ', previous discount: ' . $product->getOriginal('discount') . '% -> new: ' . $product->discount . '%' .
-                ', previous final price: ' . $product->getOriginal('final_price') . ' -> new: ' . $product->final_price;
-
-            ProductLog::create([
-                'note' => $note,
-                'product_id' => $product->id,
-                'product_name' => $product->name,
-                'user_id' => Auth::id(),
-            ]);
-
-            TranslateProduct::dispatch($product);
-
-            DB::commit();
+git
             return redirect()->back()->with('success', 'Product updated successfully.');
 
         } catch (\Exception $e) {
