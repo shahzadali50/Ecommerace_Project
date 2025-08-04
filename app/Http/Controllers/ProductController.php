@@ -310,6 +310,8 @@ class ProductController extends Controller
                 'feature' => $request->feature ?? false,
                 'barcode' => $request->barcode,
             ]);
+
+            DB::commit();
             return redirect()->back()->with('success', 'Product updated successfully.');
 
         } catch (\Exception $e) {

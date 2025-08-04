@@ -113,7 +113,7 @@ class StripeController extends Controller
                 'stripe_session_id' => $session->id,
                 'payment_intent_id' => $session->payment_intent,
                 'payment_status' => 'paid',
-                'status' => 'processing',
+                'status' => 'pending',
             ]);
 
             foreach ($cart as $product) {
