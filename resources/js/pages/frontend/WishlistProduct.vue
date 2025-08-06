@@ -22,12 +22,11 @@ const isAuthenticated = computed(() => (page.props.auth as any)?.user);
     <UserLayout>
 
         <Head :title="t('Wishlist')" />
-
         <!-- Page Header -->
         <section class="bg-cover bg-center py-16 sm:py-24"
             style="background-image: url('/assets/images/page-header-bg.jpg');">
             <div class="container mx-auto">
-                <Row>
+                <Row>   
                     <Col :span="24" class="text-center">
                     <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-0">{{ t('Wishlist Products') }}</h1>
                     </Col>

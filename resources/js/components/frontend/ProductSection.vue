@@ -53,7 +53,10 @@ const { appContext } = getCurrentInstance()!;
 const t = appContext.config.globalProperties.$t as (key: string) => string;
 
 // Products
-const products = computed<Product[]>(() => (page.props.products as any)?.data || []);
+const products = computed<Product[]>(() => {
+    const data = (page.props.products as any)?.data || [];
+    return data.filter((product: any) => product && product.id);
+});
 
 // Format price
 const formatPrice = (price: number) => {
@@ -66,12 +69,14 @@ const formatPrice = (price: number) => {
 
 // Product detail navigation
 const goToProductDetail = (slug: string) => {
+    if (!slug) return;
     router.visit(route('product.detail', { slug }));
 };
 
 // Add to cart
 const addingToCart = ref(new Set<number>());
 const addToCart = (product: Product) => {
+    if (!product || !product.id) return;
     addingToCart.value.add(product.id);
     router.post(
         route('cart.add'),
@@ -98,6 +103,7 @@ const user = computed(() => (page.props.auth as any)?.user);
 const loadingWishlist = ref(new Set<number>());
 
 const addToWhishlist = (productId: number) => {
+    if (!productId) return;
     if (user.value) {
         loadingWishlist.value.add(productId);
         router.post(route('wishlist.add'),
@@ -159,7 +165,7 @@ const isInWishlist = (productId: number) => {
                                 </template>
                                 <div
                                     class="absolute top-1 right-1 bg-white rounded-full px-1.5 py-0.5 text-[10px] sm:text-xs font-medium text-gray-800">
-                                    {{ t(product.category_name) }}
+                                    {{ t(product.category_name || 'N/A') }}
                                 </div>
                               <Button
                                 @click.stop="addToWhishlist(product.id)"
@@ -181,30 +187,30 @@ const isInWishlist = (productId: number) => {
                         </template>
                         <div>
                             <h3 class="text-[15px] sm:text-xl font-semibold text-gray-900 mb-1">
-                                {{ t(product.name) }}
+                                {{ t(product.name || 'Unnamed Product') }}
                             </h3>
                             <div class="flex justify-between items-center">
                                 <div class="flex flex-wrap">
                                     <span class="text-xs sm:text-sm md:text-base font-bold text-primary pr-2">
-                                        {{ formatPrice(product.final_price) }}
+                                        {{ formatPrice(product.final_price || 0) }}
                                     </span>
                                     <span class="text-xs sm:text-sm md:text-base text-secondary line-through">
-                                        {{ formatPrice(product.sale_price) }}
+                                        {{ formatPrice(product.sale_price || 0) }}
                                     </span>
                                 </div>
                             </div>
                             <Button type="primary"
                                 :class="[
                                     'flex items-center justify-center mt-2',
-                                    product.stock === 0 ? '!bg-gray-400 !text-white !border-gray-400 cursor-not-allowed hover:!bg-gray-400': 'btn-primary']"
+                                    (product.stock || 0) === 0 ? '!bg-gray-400 !text-white !border-gray-400 cursor-not-allowed hover:!bg-gray-400': 'btn-primary']"
                                 :loading="addingToCart.has(product.id)"
-                                :disabled="product.stock === 0"
+                                :disabled="(product.stock || 0) === 0"
                                 @click.stop="addToCart(product)"
                                 aria-label="Add to cart">
                                 <template #icon>
                                     <ShoppingCartOutlined />
                                 </template>
-                                {{ product.stock === 0 ? t('Out of Stock') : t('Add to Cart') }}
+                                {{ (product.stock || 0) === 0 ? t('Out of Stock') : t('Add to Cart') }}
                             </Button>
                         </div>
                     </Card>

@@ -215,6 +215,7 @@ public function wishlist(Request $request)
             $wishlistProducts->getCollection()->transform(function ($wishlistItem) {
                 $product = $wishlistItem->product;
                 if (!$product) {
+                    \Log::warning('Wishlist item has no product: ' . $wishlistItem->id);
                     return null;
                 }
                 return [
@@ -225,6 +226,7 @@ public function wishlist(Request $request)
                     'sale_price' => (float) $product->sale_price,
                     'final_price' => (float) $product->final_price,
                     'category_name' => $product->category?->name ?? 'N/A',
+                    'stock' => $product->stock ?? 0,
                 ];
             })->filter()->values();
 

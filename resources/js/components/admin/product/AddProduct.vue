@@ -239,8 +239,7 @@ const saveProduct = () => {
                             v-model:value="addProductForm.stock"
                             class="mt-2 w-full"
                             :min="0"
-                            :placeholder="translations.enter_stock || 'Enter Stock'"
-                        />
+                            :placeholder="translations.enter_stock || 'Enter Stock'"/>
                         <div v-if="addProductForm.errors.stock" class="text-red-500">
                             {{ addProductForm.errors.stock }}
                         </div>
@@ -252,8 +251,7 @@ const saveProduct = () => {
                         <a-select
                             v-model:value="addProductForm.status"
                             class="mt-2 w-full"
-                            :placeholder="translations.select_status || 'Select Status'"
-                        >
+                            :placeholder="translations.select_status || 'Select Status'">
                             <a-select-option value="active">{{ translations.active || 'Active' }}</a-select-option>
                             <a-select-option value="inactive">{{ translations.inactive || 'Inactive' }}</a-select-option>
                         </a-select>
@@ -269,8 +267,7 @@ const saveProduct = () => {
                     v-model:value="addProductForm.description"
                     class="mt-2 w-full"
                     :placeholder="translations.enter_description || 'Enter Description'"
-                    :auto-size="{ minRows: 3, maxRows: 6 }"
-                />
+                    :auto-size="{ minRows: 3, maxRows: 6 }"/>
                 <div v-if="addProductForm.errors.description" class="text-red-500">
                     {{ addProductForm.errors.description }}
                 </div>
@@ -293,8 +290,7 @@ const saveProduct = () => {
                             <img
                                 :src="thumnailPreview"
                                 alt="Thumbnail Preview"
-                                class="w-24 h-24 object-cover rounded border"
-                            />
+                                class="w-24 h-24 object-cover rounded border"/>
                         </div>
                     </div>
                 </a-col>
@@ -323,8 +319,7 @@ const saveProduct = () => {
                                     <button
                                         @click="removeGalleryImage(index, $event)"
                                         class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-                                        type="button"
-                                    >
+                                        type="button">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </div>
@@ -367,8 +362,7 @@ const saveProduct = () => {
                             v-model:value="addProductForm.final_price"
                             class="mt-2 w-full text-2xl font-bold p-2 text-red-600"
                             :min="0"
-                            disabled
-                        />
+                            disabled/>
                     </div>
                 </a-col>
             </a-row>
