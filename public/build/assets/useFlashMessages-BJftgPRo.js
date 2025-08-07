@@ -1,1 +1,0 @@
-import{n,y as p,am as s}from"./app-Ma9SSVpW.js";const i=(e,r)=>{const o=e.__vccOpts||e;for(const[c,t]of r)o[c]=t;return o};function _(){const e=n();p(()=>e.props.flash,r=>{r!=null&&r.success&&s.success(r.success),r!=null&&r.error&&s.error(r.error)})}export{i as _,_ as u};
