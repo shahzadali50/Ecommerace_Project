@@ -27,6 +27,7 @@ const props =defineProps<{
     categories: {
         data: Array<any>;
     };
+    categoriesForTree: Array<any>;
 }>();
 
 // Transform categories into Ant Design's options format
@@ -47,7 +48,31 @@ const form = useForm({
     parent_id: null as number | null,
     id: null,
     image: null as File | null
-})
+
+});
+const categoryTreeData = computed(() => {
+  const transformCategory = (category: any): any => {
+    const node: any = {
+      label: category.name,
+      value: category.id,
+    };
+
+    if (category.children && category.children.length > 0) {
+      node.children = category.children.map(transformCategory);
+    }
+
+    return node;
+  };
+
+  const treeData = props.categoriesForTree?.map(transformCategory) || [];
+
+  // Debug: Log the tree data structure
+  console.log('Category Tree Data:', treeData);
+  console.log('Raw categoriesForTree:', props.categoriesForTree);
+
+  return treeData;
+});
+
 const editForm = useForm({
     id: null,
     name: '',
@@ -57,7 +82,6 @@ const editForm = useForm({
     _method: 'PUT'
 });
 const isAddCategoryModalVisible = ref(false);
-const selectedCategoryName = ref('');
 const currentImage = ref('');
 const imagePreview = ref('');
 const editImagePreview = ref('');
@@ -65,7 +89,6 @@ const isImagePreviewModalVisible = ref(false);
 const previewImageUrl = ref('');
 
 const isEditModalVisible = ref(false);
-const isbrandModalVisible = ref(false);
 const isImportModalVisible = ref(false);
 const isImporting = ref(false);
 
@@ -308,22 +331,23 @@ const handleExcelFileChange = (e: Event) => {
                         :placeholder="t('Enter Name')" />
                     <div v-if="form.errors.name" class="text-red-500">{{ form.errors.name }}</div>
                 </div>
-
                 <div class="mb-4">
-                    <label class="block">{{ t('Parent Category') }}</label>
-                    <a-select
-                    show-search
-                        v-model:value="form.parent_id"
-                        class="mt-2 w-full"
-                        :placeholder="t('Select Parent Category (Optional)')"
-                        allowClear
-                        :options="categoryOptions"
-                        :filter-option="filterOption"
-                    >
-
-                    </a-select>
-                    <div v-if="form.errors.parent_id" class="text-red-500">{{ form.errors.parent_id }}</div>
+                    <label class="block">{{ t('Parent Category (Optional)') }}</label>
+                    <a-tree-select
+                            v-model:value="form.parent_id"
+                            show-search
+                            style="width: 100%"
+                            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                            :placeholder="t('Select Parent Category (Optional)')"
+                            allow-clear
+                            tree-default-expand-all
+                            :tree-data="categoryTreeData"
+                            tree-node-filter-prop="label"
+                        />
+                        <div v-if="form.errors.parent_id" class="text-red-500">{{ form.errors.parent_id }}</div>
                 </div>
+
+
                 <div class="mb-4">
                     <label class="block">{{ t('Description') }}</label>
                     <a-textarea v-model:value="form.description" class="mt-2 w-full"
@@ -360,16 +384,17 @@ const handleExcelFileChange = (e: Event) => {
                 </div>
                 <div class="mb-4">
                     <label class="block">{{ t('Parent Category') }}</label>
-                    <a-select
-                        v-model:value="editForm.parent_id"
-                        class="mt-2 w-full"
-                        :placeholder="t('Select Parent Category (Optional)')"
-                        allowClear
-                         :options="categoryOptions"
-                        :filter-option="filterOption"
-                    >
-
-                    </a-select>
+                    <a-tree-select
+                            v-model:value="editForm.parent_id"
+                            show-search
+                            style="width: 100%"
+                            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                            :placeholder="t('Select Parent Category (Optional)')"
+                            allow-clear
+                            tree-default-expand-all
+                            :tree-data="categoryTreeData"
+                            tree-node-filter-prop="label"
+                        />
                     <div v-if="editForm.errors.parent_id" class="text-red-500">{{ editForm.errors.parent_id }}</div>
                 </div>
                 <div class="mb-4">

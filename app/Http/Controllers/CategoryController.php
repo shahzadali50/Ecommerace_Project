@@ -30,7 +30,7 @@ class CategoryController extends Controller
                 ->latest()
                 ->get();
 
-            // Transform each category with basic data
+            // Transform each category with basic data for table
             $categories = $categories->map(fn($category) => [
                 'id' => $category->id,
                 'image' => $category->image,
@@ -43,10 +43,20 @@ class CategoryController extends Controller
                 ] : null,
             ]);
 
+            // Create hierarchical structure for tree select
+            $categoriesForTree = Category::where('user_id', Auth::id())
+                ->select('id', 'name', 'parent_id')
+                ->with(['children' => function($query) {
+                    $query->select('id', 'name', 'parent_id');
+                }])
+                ->whereNull('parent_id')
+                ->get();
+
             return Inertia::render('admin/category/Index', [
                 'categories' => [
                     'data' => $categories // Wrap the collection in a data key
                 ],
+                'categoriesForTree' => $categoriesForTree, // For tree select
                 'locale' => App::getLocale(),
             ]);
         } catch (\Throwable $e) {

@@ -46,10 +46,15 @@ class Category extends Model
 
         static::deleting(function ($category) {
             try {
+                 // 1️⃣ Delete all products in this category
                 foreach ($category->products as $product) {
                     // $product->purchaseProducts()->delete();
                     $product->delete();
                 }
+                  // 2️⃣ Recursively delete all child categories
+            foreach ($category->children as $child) {
+                $child->delete(); // This will trigger this same deleting event
+            }
 
             } catch (\Throwable $e) {
                 Log::error('Error in Category deleting event: ' . $e->getMessage());
